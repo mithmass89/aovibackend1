@@ -52,6 +52,7 @@ const createDB = function (info, callback) {
         trackstock int DEFAULT NULL,
         barcode varchar(100) DEFAULT NULL,
         sku varchar(100) DEFAULT NULL,
+        multiprice int DEFAULT '0',
         id bigint NOT NULL AUTO_INCREMENT,
         PRIMARY KEY (outletcode,itemcode,id),
         KEY id (id)
@@ -65,14 +66,12 @@ const createDB = function (info, callback) {
     });
 
     connection.query(`CREATE TABLE transaction_typ (
-        progcd varchar(200) DEFAULT '',
-        progname varchar(200) DEFAULT '',
-        prefix varchar(200) DEFAULT '',
-        profile varchar(200) DEFAULT '',
-        trnonext varchar(200) DEFAULT '',
+        transtype varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+        transdesc varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
+        active int DEFAULT NULL,
         id bigint NOT NULL AUTO_INCREMENT,
         PRIMARY KEY (id)
-      ) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+      ) ENGINE=InnoDB AUTO_INCREMENT=73 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
       `, function (err, result, fields) {
         if (err) {
             console.log(err);
@@ -165,14 +164,21 @@ const createDB = function (info, callback) {
     connection.query(`CREATE TABLE condiment_master (
         itemcode varchar(200) NOT NULL DEFAULT '',
         condimentdesc varchar(200) DEFAULT '',
-        id bigint NOT NULL AUTO_INCREMENT,
         optioncode varchar(200) NOT NULL DEFAULT '',
         optiondesc varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
         amount decimal(10,0) NOT NULL DEFAULT '0',
         qty decimal(10,0) NOT NULL DEFAULT '0',
+        condimenttype varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+        id bigint NOT NULL AUTO_INCREMENT,
+        taxpct decimal(10,0) NOT NULL DEFAULT '0',
+        servicepct decimal(10,0) NOT NULL DEFAULT '0',
+        taxamount decimal(10,0) NOT NULL DEFAULT '0',
+        serviceamount decimal(10,0) NOT NULL DEFAULT '0',
+        nettamount decimal(10,0) NOT NULL DEFAULT '0',
+        active int NOT NULL DEFAULT '1',
         PRIMARY KEY (itemcode,id,optioncode),
         KEY id (id)
-      ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+      ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
       
       `, function (err, result, fields) {
         if (err) {
@@ -185,6 +191,7 @@ const createDB = function (info, callback) {
     connection.query(`CREATE TABLE condiment_map (
         itemcode varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
         condimentcode varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT 'condimentcode',
+        active int NOT NULL DEFAULT '1',
         id bigint NOT NULL AUTO_INCREMENT,
         PRIMARY KEY (itemcode,condimentcode,id),
         KEY id (id)
@@ -377,11 +384,16 @@ const condimentMasterCreate = function (info, callback) {
         ini.push(a.amount);
         ini.push(a.qty);
         ini.push(a.condimenttype);
+        ini.push(a.taxpct);
+        ini.push(a.servicepct);
+        ini.push(a.taxamount);
+        ini.push(a.serviceamount);
+        ini.push(a.nettamount);
         o.push(ini);
         return o
     }, [])
     console.log(values);
-    connection.query(`insert into condiment_master (itemcode,condimentdesc,optioncode,optiondesc,amount,qty,condimenttype) VALUES ?`, [values], function (err, result, fields) {
+    connection.query(`insert into condiment_master (itemcode,condimentdesc,optioncode,optiondesc,amount,qty,condimenttype,taxpct,servicepct,taxamount,serviceamount ,nettamount) VALUES ?`, [values], function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -470,6 +482,36 @@ const mapping_Condiment = function (info, callback) {
     });
 }
 
+const insert_transaksitipe = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+
+    var j = info.data;
+    var values = j.reduce((o, a) => {
+        let ini = [];
+        ini.push(a.transtype);
+        ini.push(a.transdesc);
+        o.push(ini);
+        return o
+    }, [])
+    console.log(values);
+    connection.query(`insert into transaction_typ (transtype,transdesc) VALUES ?`, [values], function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
 const insertPromo = function (info, callback) {
     console.log(info);
     connection.query(`USE ${info.dbname};;`, function (err, result, fields) {
@@ -512,6 +554,7 @@ const getOutletUser = function (info, callback) {
         console.log('Database : ' + connection.state);
     });
 }
+
 
 
 
@@ -613,8 +656,12 @@ const insertProduct = function (info, callback) {
             throw err;
         }
     });
-    console.log(info);
-    connection.query(`insert into item_master (outletcode,itemcode,itemdesc,slsamt,costamt,slsnett,taxpct,svchgpct,revenuecoa,taxcoa,svchgcoa,slsfl,costcoa,ctg,stock,pathimage,description,trackstock,barcode,sku) VALUES  ("${info.data.outletcode}","${info.data.itemcode}","${info.data.itemdesc}","${info.data.slsamt}","${info.data.costamt}","${info.data.slsnett}","${info.data.taxpct}","${info.data.svchgpct}","${info.data.revenuecoa}","${info.data.taxcoa}","${info.data.svchgcoa}","${info.data.slsfl}","${info.data.costcoa}","${info.data.ctg}","${info.data.stock}","${info.data.pathimage}","${info.data.description}","${info.data.trackstock}","${info.data.barcode}","${info.data.sku}")`, function (err, result, fields) {
+ 
+    // var x = JSON.parse(info.data.pricelist);
+    var z = JSON.stringify(info.data.pricelist);
+    var x =  z.toString();
+    console.log(x);
+    connection.query(`insert into item_master (outletcode,itemcode,itemdesc,slsamt,costamt,slsnett,taxpct,svchgpct,revenuecoa,taxcoa,svchgcoa,slsfl,costcoa,ctg,stock,pathimage,description,trackstock,barcode,sku,pricelist,multiprice) VALUES  ('${info.data.outletcode}','${info.data.itemcode}','${info.data.itemdesc}','${info.data.slsamt}','${info.data.costamt}','${info.data.slsnett}','${info.data.taxpct}','${info.data.svchgpct}','${info.data.revenuecoa}','${info.data.taxcoa}','${info.data.svchgcoa}','${info.data.slsfl}','${info.data.costcoa}','${info.data.ctg}','${info.data.stock}','${info.data.pathimage}','${info.data.description}','${info.data.trackstock}','${info.data.barcode}','${info.data.sku}','${x}','${info.data.multiprice}')`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -637,7 +684,9 @@ const updateItem = function (info, callback) {
         }
     });
     console.log(info);
-    connection.query(`update item_master set itemdesc = "${info.data.itemdesc}", slsamt="${info.data.slsamt}",costamt="${info.data.costamt}",slsnett="${info.data.slsnett}",taxpct="${info.data.taxpct}",svchgpct="${info.data.svchgpct}",ctg="${info.data.ctg}",stock="${info.data.stock}",pathimage="${info.data.pathimage}",description="${info.data.description}",trackstock="${info.data.trackstock}",barcode="${info.data.barcode}",sku="${info.data.sku}" where itemcode='${info.data.itemcode}'`, function (err, result, fields) {
+    var z = JSON.stringify(info.data.pricelist);
+    var x =  z.toString();
+    connection.query(`update item_master set itemdesc = '${info.data.itemdesc}', slsamt='${info.data.slsamt}',costamt='${info.data.costamt}',slsnett='${info.data.slsnett}',taxpct='${info.data.taxpct}',svchgpct='${info.data.svchgpct}',ctg='${info.data.ctg}',stock='${info.data.stock}',pathimage='${info.data.pathimage}',description='${info.data.description}',trackstock='${info.data.trackstock}',barcode='${info.data.barcode}',sku='${info.data.sku}',pricelist='${x}',multiprice='${info.data.multiprice}'  where itemcode='${info.data.itemcode}'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -728,7 +777,7 @@ const updatePosdetail = function (info, callback) {
     });
     console.log(info);
     connection.query(`UPDATE posdetail 
-    SET description='${info.data.description}',qty='${info.data.qty}',rateamtitem='${info.data.rateamtitem}',discamt='${info.data.discamt}',discpct='${info.data.discpct}',revenueamt='${info.data.revenueamt}',taxamt='${info.data.taxamt}',serviceamt='${info.data.serviceamt}',totalaftdisc='${info.data.totalaftdisc}' WHERE id = '${info.data.id}'`, function (err, result, fields) {
+    SET description='${info.data.description}',qty='${info.data.qty}',rateamtitem='${info.data.rateamtitem}',discamt='${info.data.discamt}',discpct='${info.data.discpct}',revenueamt='${info.data.revenueamt}',taxamt='${info.data.taxamt}',serviceamt='${info.data.serviceamt}',totalaftdisc='${info.data.totalaftdisc}',salestype='${info.data.salestype}' WHERE id = '${info.data.id}'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -808,6 +857,30 @@ const deactivePosCondimentByID = function (info, callback) {
     });
 }
 
+
+const deactiveTipeTrans = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`UPDATE transaction_typ SET active='0' where id='${info.data}' `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
 const deactivePosdetailTrans = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
@@ -874,6 +947,36 @@ const deactivePromoTrno = function (info, callback) {
     });
 }
 
+const deactiveCondiment = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`UPDATE condiment_master SET active='0' where itemcode='${info.itemcode}' `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`UPDATE condiment_map SET active='0' where condimentcode='${info.itemcode}' `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
 
 const updateCondimentTrno = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
@@ -932,16 +1035,20 @@ const getProduct = function (info, callback) {
     ,sku
     ,COUNT(condimentcode) AS modifiers
     ,item_master.id
+    ,item_master.pricelist as pricelist
+    ,item_master.multiprice as multiprice
      FROM item_master 
      
     LEFT JOIN condiment_map 
-    ON item_master.itemcode=condiment_map.itemcode where outletcode='${info.data}' GROUP BY itemcode`, function (err, result, fields) {
+    ON item_master.itemcode=condiment_map.itemcode 
+    and condiment_map.active='1'
+    where outletcode='${info.data}'  GROUP BY itemcode`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
             throw err;
         }
-        //console.log(result);
+        console.log(result);
         callback(result);
 
         console.log('Database : ' + connection.state);
@@ -960,7 +1067,7 @@ const getItemCondiment = function (info, callback) {
     console.log(info);
     connection.query(`SELECT * FROM condiment_map
     LEFT JOIN condiment_master ON condiment_map.condimentcode=condiment_master.itemcode
-     WHERE condiment_map.itemcode='${info.itemcode}'`, function (err, result, fields) {
+     WHERE condiment_map.itemcode='${info.itemcode}' and condiment_master.active='1'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -996,6 +1103,28 @@ const checkTransactionNo = function (info, callback) {
     });
 }
 
+
+const getTransaksitipe = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`select * from transaction_typ where active='1' `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
 
 const getProductByItemcode = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
@@ -1119,6 +1248,11 @@ const getTrnoData = function (info, callback) {
     ,discamt
     ,discpct
     ,(SELECT COUNT(itemcode) FROM condiment_map WHERE condiment_map.itemcode=posdetail.itemcode) AS havecond
+    ,(select taxpct from item_master where posdetail.itemcode=item_master.itemcode) as taxpct
+    ,(select svchgpct from item_master where posdetail.itemcode=item_master.itemcode) as svchgpct
+    ,(select pricelist from item_master where posdetail.itemcode=item_master.itemcode) as pricelist
+    ,(select multiprice from item_master where posdetail.itemcode=item_master.itemcode) as multiprice
+    ,posdetail.salestype as salestype
     FROM 
     posdetail WHERE transno='${info.data}' AND active= '1'
     
@@ -1147,7 +1281,12 @@ const getTrnoData = function (info, callback) {
     ,optiondesc
     ,'condiment' AS typ
     ,0 AS discamt,0 AS discpct
-    ,0
+    ,0 
+    ,0 as taxpct
+    ,0 as svchgpct
+    ,null as pricelist
+    ,0 as multiprice
+    ,'' as salestype
     FROM poscondiment WHERE transno='${info.data}' AND active= '1'
     
     
@@ -1453,4 +1592,4 @@ const delitem = function (info, callback) {
 
 
 
-module.exports = { updateCondimentTrno,getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };
+module.exports = { deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };

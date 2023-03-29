@@ -89,6 +89,7 @@ app.post('/getitembybarcode', function (req, res) {
 });
 
 
+
 app.post('/detailtrno', function (req, res) {
     getTrnoData(req.body, function (result, req) {
         res.status(200).send(result);
@@ -140,6 +141,13 @@ app.post('/insertMapping', function (req, res) {
     });
 });
 
+app.post('/insert_transactiontype', function (req, res) {
+    insert_transaksitipe(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 
 
 app.post('/outlet_user', function (req, res) {
@@ -174,6 +182,12 @@ app.post('/getCondimentItem', function (req, res) {
 
 app.post('/getDetailCondimentTrno', function (req, res) {
     getDetailConidmentTrno(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/gettransaksiTipe', function (req, res) {
+    getTransaksitipe(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -245,6 +259,13 @@ app.post('/deactiveposdetail', function (req, res) {
     });
 });
 
+app.post('/deactivecondiment', function (req, res) {
+    deactiveCondiment(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 app.post('/deactiveposdetailTrans', function (req, res) {
     deactivePosdetailTrans(req.body, function (result, req) {
         res.status(200).send(result);
@@ -286,6 +307,13 @@ app.post('/deactiveCondimentByAll', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+app.post('/deactiveTipeTrans', function (req, res) {
+    deactiveTipeTrans(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 app.post('/updateCondiment', function (req, res) {
     updateCondimentTrno(req.body, function (result, req) {
@@ -344,6 +372,10 @@ insertPosCondiment = function (info, callback, requests) {
 
 insertMapping_condiment = function (info, callback, requests) {
     functionOutlet.mapping_Condiment(info, callback, requests);
+}
+
+insert_transaksitipe = function (info, callback, requests) {
+    functionOutlet.insert_transaksitipe(info, callback, requests);
 }
 
 
@@ -411,6 +443,10 @@ getCashierSummary = function (info, callback, requests) {
 
 getTransno = function (info, callback, requests) {
     functionOutlet.checkTransactionNo(info, callback, requests);
+}
+
+getTransaksitipe = function (info, callback, requests) {
+    functionOutlet.getTransaksitipe(info, callback, requests);
 }
 
 
@@ -484,6 +520,14 @@ deactiveCondimentByID = function (info, callback, requests) {
 
 deactiveCondimentByAll = function (info, callback, requests) {
     functionOutlet.deactiveCondimentByAll(info, callback, requests);
+}
+
+
+deactiveCondiment = function (info, callback, requests) {
+    functionOutlet.deactiveCondiment(info, callback, requests);
+}
+deactiveTipeTrans = function (info, callback, requests) {
+    functionOutlet.deactiveTipeTrans(info, callback, requests);
 }
 
 
