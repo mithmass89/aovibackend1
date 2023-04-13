@@ -53,6 +53,7 @@ const createDB = function (info, callback) {
         barcode varchar(100) DEFAULT NULL,
         sku varchar(100) DEFAULT NULL,
         multiprice int DEFAULT '0',
+        pricelist json NOT NULL,
         id bigint NOT NULL AUTO_INCREMENT,
         PRIMARY KEY (outletcode,itemcode,id),
         KEY id (id)
@@ -196,6 +197,19 @@ const createDB = function (info, callback) {
         PRIMARY KEY (itemcode,condimentcode,id),
         KEY id (id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+      `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+
+    connection.query(`CREATE TABLE user_access (
+        usercode varchar(100) DEFAULT '',
+        accesscode varchar(100) DEFAULT '',
+        outlet varchar(100) DEFAULT ''
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_c
       `, function (err, result, fields) {
         if (err) {
             console.log(err);
@@ -555,6 +569,28 @@ const getOutletUser = function (info, callback) {
     });
 }
 
+const getAccessUser = function (info, callback) {
+    console.log(info);
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`select * from access_user  where usercd='${info.usercd}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
 
 
 
@@ -656,10 +692,10 @@ const insertProduct = function (info, callback) {
             throw err;
         }
     });
- 
+
     // var x = JSON.parse(info.data.pricelist);
     var z = JSON.stringify(info.data.pricelist);
-    var x =  z.toString();
+    var x = z.toString();
     console.log(x);
     connection.query(`insert into item_master (outletcode,itemcode,itemdesc,slsamt,costamt,slsnett,taxpct,svchgpct,revenuecoa,taxcoa,svchgcoa,slsfl,costcoa,ctg,stock,pathimage,description,trackstock,barcode,sku,pricelist,multiprice) VALUES  ('${info.data.outletcode}','${info.data.itemcode}','${info.data.itemdesc}','${info.data.slsamt}','${info.data.costamt}','${info.data.slsnett}','${info.data.taxpct}','${info.data.svchgpct}','${info.data.revenuecoa}','${info.data.taxcoa}','${info.data.svchgcoa}','${info.data.slsfl}','${info.data.costcoa}','${info.data.ctg}','${info.data.stock}','${info.data.pathimage}','${info.data.description}','${info.data.trackstock}','${info.data.barcode}','${info.data.sku}','${x}','${info.data.multiprice}')`, function (err, result, fields) {
         if (err) {
@@ -685,7 +721,7 @@ const updateItem = function (info, callback) {
     });
     console.log(info);
     var z = JSON.stringify(info.data.pricelist);
-    var x =  z.toString();
+    var x = z.toString();
     connection.query(`update item_master set itemdesc = '${info.data.itemdesc}', slsamt='${info.data.slsamt}',costamt='${info.data.costamt}',slsnett='${info.data.slsnett}',taxpct='${info.data.taxpct}',svchgpct='${info.data.svchgpct}',ctg='${info.data.ctg}',stock='${info.data.stock}',pathimage='${info.data.pathimage}',description='${info.data.description}',trackstock='${info.data.trackstock}',barcode='${info.data.barcode}',sku='${info.data.sku}',pricelist='${x}',multiprice='${info.data.multiprice}'  where itemcode='${info.data.itemcode}'`, function (err, result, fields) {
         if (err) {
             console.log(err);
@@ -710,6 +746,29 @@ const updatePromo = function (info, callback) {
     });
     console.log(info);
     connection.query(`update promo_master set promocd = "${info.data.promocd}", promodesc="${info.data.promodesc}",amount=${info.data.amount},pct=${info.data.pct},type="${info.data.type}",maxdisc=${info.data.maxdisc},mindisc=${info.data.mindisc}`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const updateUserGmail = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update users set uuid = "${info.data.uuid}", urlpict="${info.data.urlpic}",fullname="${info.data.fullname}",lastsignin="${info.data.lastsignin}",token="${info.data.token}"`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1104,6 +1163,30 @@ const checkTransactionNo = function (info, callback) {
 }
 
 
+const getUserinfofromManual = function (info, callback) {
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`select * from users where email= "${info.email}" and password="${info.password}"`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+
 const getTransaksitipe = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
@@ -1475,6 +1558,135 @@ const getSummaryPyTrno = function (info, callback) {
 
 }
 
+
+const getSalesTodaySum = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT ifnull(trdt,"${info.trdt}") as trdt,ifnull(SUM(totalaftdisc),0) AS totalaftdisc FROM (SELECT  trdt,outletcd,SUM(totalaftdisc) AS totalaftdisc FROM posdetail WHERE trdt BETWEEN "${info.trdt}" AND "${info.trdt}" and active='1'
+    UNION 
+    SELECT  trdt,outletcode,SUM(totalnett) AS totalaftdisc FROM poscondiment WHERE trdt BETWEEN  "${info.trdt}" AND  "${info.trdt}" and active='1')X
+    
+    `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+
+}
+
+
+const getSales7daySum = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT ifnull(trdt,"${info.trdt}") as trdt,ifnull(SUM(totalaftdisc),0) AS totalaftdisc FROM (SELECT  trdt,outletcd,SUM(totalaftdisc) AS totalaftdisc FROM posdetail WHERE trdt BETWEEN DATE_ADD("${info.trdt}", INTERVAL -7 DAY) AND "${info.trdt} and active='1'"
+    UNION 
+    SELECT  trdt,outletcode,SUM(totalnett) AS totalaftdisc FROM poscondiment WHERE trdt BETWEEN DATE_ADD("${info.trdt}", INTERVAL -7 DAY) AND "${info.trdt}" and active='1')X
+    
+    `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+
+}
+
+
+const getSalesMonthly = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT ifnull(trdt,"${info.trdt}") as trdt,ifnull(SUM(totalaftdisc),0) AS totalaftdisc FROM (SELECT  trdt,outletcd,SUM(totalaftdisc) AS totalaftdisc FROM posdetail WHERE trdt BETWEEN DATE_ADD("${info.trdt}", INTERVAL -1 MONTH) AND "${info.trdt}" and active='1'
+    UNION 
+    SELECT  trdt,outletcode,SUM(totalnett) AS totalaftdisc FROM poscondiment WHERE trdt BETWEEN DATE_ADD("${info.trdt}", INTERVAL -1 MONTH) AND "${info.trdt}" and active='1')X
+    `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+
+}
+
+
+const listdataChart = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT trdt, ROUND(SUM(totalaftdisc/1000000),1)  AS totalaftdisc FROM (SELECT trdt,SUM(totalaftdisc) AS totalaftdisc FROM (SELECT  trdt,outletcd,SUM(totalaftdisc) AS totalaftdisc FROM posdetail WHERE trdt BETWEEN DATE_ADD("${info.trdt}", INTERVAL -1 MONTH) AND "${info.trdt}" and active='1' GROUP BY trdt
+    UNION 
+    SELECT  trdt,outletcode,SUM(totalnett) AS totalaftdisc FROM poscondiment WHERE trdt BETWEEN DATE_ADD("${info.trdt}", INTERVAL -1 MONTH) AND "${info.trdt}" and active='1'  GROUP BY trdt)X
+    GROUP BY trdt 
+    UNION  ALL
+    SELECT DATE_ADD("${info.trdt}", INTERVAL -1 DAY) AS trdt,CAST(0 AS DECIMAL(1,1)) AS totalaftdisc
+UNION 
+SELECT DATE_ADD("${info.trdt}", INTERVAL -2 DAY) AS trdt,CAST(0 AS DECIMAL(1,1)) AS totalaftdisc
+UNION 
+SELECT DATE_ADD("${info.trdt}", INTERVAL -3 DAY) AS trdt,CAST(0 AS DECIMAL(1,1)) AS totalaftdisc
+UNION 
+SELECT DATE_ADD("${info.trdt}", INTERVAL -4 DAY) AS trdt,CAST(0 AS DECIMAL(1,1)) AS totalaftdisc
+UNION 
+SELECT DATE_ADD("${info.trdt}", INTERVAL -5 DAY) AS trdt,CAST(0 AS DECIMAL(1,1)) AS totalaftdisc
+UNION 
+SELECT DATE_ADD("${info.trdt}", INTERVAL -6 DAY) AS trdt,CAST(0 AS DECIMAL(1,1)) AS totalaftdisc
+
+
+
+)X
+
+GROUP BY trdt ORDER BY trdt
+    `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+
+}
+
 const getOutstandingBill = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
@@ -1484,9 +1696,13 @@ const getOutstandingBill = function (info, callback) {
         }
     });
     console.log(info);
-    connection.query(`SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname  FROM (SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname FROM posdetail where active='1' GROUP BY transno
-    UNION 
-    SELECT trdt,transno,SUM(-totalamt) AS totalaftdisc,usercreate,createdate,'' as guestname FROM pospayment where active='1' GROUP BY transno )X GROUP BY transno HAVING totalaftdisc`, function (err, result, fields) {
+    connection.query(`SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname  FROM (SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname FROM (
+        SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname FROM posdetail WHERE active='1' GROUP BY transno
+        UNION 
+        SELECT trdt,transno,SUM(totalnett) AS totalaftdisc,'' AS usercreate,createdt,'' AS guestname FROM  poscondiment WHERE active='1' GROUP BY transno)X 
+        GROUP BY transno
+            UNION 
+        SELECT trdt,transno,SUM(-totalamt) AS totalaftdisc,usercreate,createdate,'' as guestname FROM pospayment where active='1' GROUP BY transno )X GROUP BY transno HAVING totalaftdisc`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1510,6 +1726,53 @@ const getDetailPyTrno = function (info, callback) {
     });
     console.log(info);
     connection.query(`select * from pospayment where transno1='${info.transno1}' and active='1' and pymtmthd<>'Discount'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+
+}
+
+const checkUserFromOauth = function (info, callback) {
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT * FROM users WHERE email='${info.email}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+
+}
+
+
+const checkOutletUser = function (info, callback) {
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT * FROM outlet_access WHERE email='${info.usercd}'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1592,4 +1855,4 @@ const delitem = function (info, callback) {
 
 
 
-module.exports = { deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };
+module.exports = { getAccessUser,checkUserFromOauth, checkOutletUser, getUserinfofromManual, updateUserGmail, listdataChart, getSalesMonthly, getSales7daySum, getSalesTodaySum, deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };

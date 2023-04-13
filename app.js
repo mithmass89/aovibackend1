@@ -1,4 +1,4 @@
-
+const cors = require('cors');
 const functionOutlet = require('./query');
 const express = require("express");
 const bodyParser = require("body-parser");
@@ -8,7 +8,7 @@ const app = express();
 app.use(bodyParser.json());
 // parse requests of content-type: application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(cors());
 
 
 app.post('/query', function (req, res) {
@@ -156,6 +156,19 @@ app.post('/outlet_user', function (req, res) {
     });
 });
 
+app.post('/getUserinfofromManual', function (req, res) {
+    getUserinfofromManual(req.body, function (result, req) {
+        console.log(result);
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAccessUser', function (req, res) {
+    getAccessUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/getctg', function (req, res) {
     getCTG(req.body, function (result, req) {
         res.status(200).send(result);
@@ -193,6 +206,32 @@ app.post('/gettransaksiTipe', function (req, res) {
 });
 
 
+app.post('/salestoday', function (req, res) {
+    getSalesTodaySum(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/salesweekly', function (req, res) {
+    getSales7daySum(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/salesmonthly', function (req, res) {
+    getSalesMonthly(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/listdatachart', function (req, res) {
+    listdataChart(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+
 
 
 
@@ -201,6 +240,14 @@ app.post('/getsumtrnopy', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+app.post('/checkUserFromOauth', function (req, res) {
+    checkUserFromOauth(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 
 app.post('/promolist', function (req, res) {
     getPromoList(req.body, function (result, req) {
@@ -225,6 +272,16 @@ app.post('/updateitem', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+
+
+app.post('/updateUserGmail', function (req, res) {
+    updateUserGmail(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 
 app.post('/updatePosDetail', function (req, res) {
     updatePosdetail(req.body, function (result, req) {
@@ -387,6 +444,25 @@ getOutletUser = function (info, callback, requests) {
     functionOutlet.getOutletUser(info, callback, requests);
 }
 
+checkUserFromOauth = function (info, callback, requests) {
+    functionOutlet.checkUserFromOauth(info, callback, requests);
+}
+
+checkOutletUser = function (info, callback, requests) {
+    functionOutlet.checkOutletUser(info, callback, requests);
+}
+
+getAccessUser = function (info, callback, requests) {
+    functionOutlet.getAccessUser(info, callback, requests);
+}
+
+getUserinfofromManual = function (info, callback, requests) {
+    functionOutlet.getUserinfofromManual(info, callback, requests);
+}
+
+
+
+
 getPromoList = function (info, callback, requests) {
     functionOutlet.getPromoList(info, callback, requests);
 }
@@ -437,6 +513,22 @@ getOutstandingBill = function (info, callback, requests) {
     functionOutlet.getOutstandingBill(info, callback, requests);
 }
 
+getSalesTodaySum = function (info, callback, requests) {
+    functionOutlet.getSalesTodaySum(info, callback, requests);
+}
+
+getSales7daySum = function (info, callback, requests) {
+    functionOutlet.getSales7daySum(info, callback, requests);
+}
+
+getSalesMonthly = function (info, callback, requests) {
+    functionOutlet.getSalesMonthly(info, callback, requests);
+}
+
+listdataChart = function (info, callback, requests) {
+    functionOutlet.listdataChart(info, callback, requests);
+}
+
 getCashierSummary = function (info, callback, requests) {
     functionOutlet.getCashierSummary(info, callback, requests);
 }
@@ -468,6 +560,10 @@ delitem = function (info, callback, requests) {
 
 updateCondimentTrno = function (info, callback, requests) {
     functionOutlet.updateCondimentTrno(info, callback, requests);
+}
+
+updateUserGmail = function (info, callback, requests) {
+    functionOutlet.updateUserGmail(info, callback, requests);
 }
 
 
