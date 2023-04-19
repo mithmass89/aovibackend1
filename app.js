@@ -147,6 +147,13 @@ app.post('/insert_transactiontype', function (req, res) {
     });
 });
 
+app.post('/insertTableMaster', function (req, res) {
+    insertTableMaster(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 
 
 
@@ -155,6 +162,8 @@ app.post('/outlet_user', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+
 
 app.post('/getUserinfofromManual', function (req, res) {
     getUserinfofromManual(req.body, function (result, req) {
@@ -255,8 +264,27 @@ app.post('/promolist', function (req, res) {
     });
 });
 
+app.post('/getTableList', function (req, res) {
+    getTableList(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/delctg', function (req, res) {
     delctg(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/deactiveTable', function (req, res) {
+    deactiveTable(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/deactiveTableAll', function (req, res) {
+    deactiveTableAll(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -304,6 +332,32 @@ app.post('/updateTrno', function (req, res) {
 
 app.post('/updateTrnoGuest', function (req, res) {
     updateguestTrnos(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/updateTablestrno', function (req, res) {
+    updateTablestrno(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/updateTables_use', function (req, res) {
+    updateTables_use(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/cleartable', function (req, res) {
+    cleartable(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getTablesNotUse', function (req, res) {
+    getTablesNotUse(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -436,12 +490,30 @@ insert_transaksitipe = function (info, callback, requests) {
 }
 
 
+insertTableMaster = function (info, callback, requests) {
+    functionOutlet.insertTableMaster(info, callback, requests);
+}
+
+
 
 
 
 
 getOutletUser = function (info, callback, requests) {
     functionOutlet.getOutletUser(info, callback, requests);
+}
+
+
+getTablesNotUse = function (info, callback, requests) {
+    functionOutlet.getTablesNotUse(info, callback, requests);
+}
+
+getTableList = function (info, callback, requests) {
+    functionOutlet.getTableList(info, callback, requests);
+}
+
+cleartable = function (info, callback, requests) {
+    functionOutlet.cleartable(info, callback, requests);
 }
 
 checkUserFromOauth = function (info, callback, requests) {
@@ -588,6 +660,14 @@ updateguestTrnos = function (info, callback, requests) {
     functionOutlet.updatePosdetailGuest(info, callback, requests);
 }
 
+updateTablestrno = function (info, callback, requests) {
+    functionOutlet.updateTablestrno(info, callback, requests);
+}
+
+updateTables_use = function (info, callback, requests) {
+    functionOutlet.updateTables_use(info, callback, requests);
+}
+
 
 updatePosdetail = function (info, callback, requests) {
     functionOutlet.updatePosdetail(info, callback, requests);
@@ -595,6 +675,14 @@ updatePosdetail = function (info, callback, requests) {
 
 deactivePosdetail = function (info, callback, requests) {
     functionOutlet.deactivePosdetail(info, callback, requests);
+}
+
+deactiveTable = function (info, callback, requests) {
+    functionOutlet.deactiveTable(info, callback, requests);
+}
+
+deactiveTableAll = function (info, callback, requests) {
+    functionOutlet.deactiveTableAll(info, callback, requests);
 }
 
 

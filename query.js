@@ -30,7 +30,7 @@ const createDB = function (info, callback) {
             throw err;
         }
     });
-    connection.query(`CREATE TABLE item_master (
+    connection.query(`CREATE TABLES item_master (
         outletcode varchar(100) NOT NULL,
         itemcode varchar(100) NOT NULL,
         subitemcode varchar(200) NOT NULL,
@@ -160,6 +160,29 @@ const createDB = function (info, callback) {
         }
     });
 
+    connection.query(`
+    CREATE TABLE tables (
+        tablecd varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
+        sectioncd varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
+        posx int DEFAULT '0',
+        posy int DEFAULT '0',
+        id int NOT NULL AUTO_INCREMENT,
+        active int DEFAULT '1',
+        transno varchar(100) DEFAULT '',
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+    
+      `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+
+
+
+
 
 
     connection.query(`CREATE TABLE condiment_master (
@@ -257,6 +280,7 @@ const createDB = function (info, callback) {
         condiment json NOT NULL,
         totalcondiment decimal(10,0) DEFAULT NULL,
         salestype varchar(200) DEFAULT NULL,
+        tables_id varchar(100) DEFAULT '',
         PRIMARY KEY (id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
       `, function (err, result, fields) {
@@ -381,7 +405,7 @@ const categoryCreate = function (info, callback) {
 
 const condimentMasterCreate = function (info, callback) {
     console.log(info);
-    connection.query(`USE ${info.dbname};;`, function (err, result, fields) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -408,6 +432,37 @@ const condimentMasterCreate = function (info, callback) {
     }, [])
     console.log(values);
     connection.query(`insert into condiment_master (itemcode,condimentdesc,optioncode,optiondesc,amount,qty,condimenttype,taxpct,servicepct,taxamount,serviceamount ,nettamount) VALUES ?`, [values], function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const insertTableMaster = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    var j = info.data;
+    var values = j.reduce((o, a) => {
+        let ini = [];
+        ini.push(a.tablecd);
+        ini.push(a.sectioncd);
+        ini.push(a.posx);
+        ini.push(a.posy);
+        o.push(ini);
+        return o
+    }, [])
+    console.log(values);
+    connection.query(`insert into tables (tablecd,sectioncd,posx,posy) VALUES ?`, [values], function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -569,6 +624,9 @@ const getOutletUser = function (info, callback) {
     });
 }
 
+
+
+
 const getAccessUser = function (info, callback) {
     console.log(info);
     connection.query(`USE profiler;`, function (err, result, fields) {
@@ -578,7 +636,9 @@ const getAccessUser = function (info, callback) {
             throw err;
         }
     });
-    connection.query(`select * from access_user  where usercd='${info.usercd}'`, function (err, result, fields) {
+    connection.query(`SELECT usercd,accesscd AS access,accessdesc FROM users
+    LEFT JOIN acess_subcription ON users.subscription=acess_subcription.subscriptioncd
+     WHERE usercd='${info.usercd}'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -648,7 +708,7 @@ const insertDetail = function (info, callback, requests) {
         }
     });
     console.log(info.data);
-    connection.query(`insert into posdetail (trdt,outletcd,transno,transno1,itemseq,itemcode,itemdesc,description,qty,rvncoa,taxcoa,servicecoa,othercoa,rateamtitem,rateamtservice,rateamttax,revenueamt,serviceamt,taxamt,otheramt,discpct,discamt,totalaftdisc,orderno,active,usercreate,createdt) VALUES ?`, [info.data], function (err, result, fields) {
+    connection.query(`insert into posdetail (trdt,outletcd,transno,transno1,itemseq,itemcode,itemdesc,description,qty,rvncoa,taxcoa,servicecoa,othercoa,rateamtitem,rateamtservice,rateamttax,revenueamt,serviceamt,taxamt,otheramt,discpct,discamt,totalaftdisc,orderno,active,usercreate,createdt,guestname) VALUES ?`, [info.data], function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -782,6 +842,54 @@ const updateUserGmail = function (info, callback) {
 }
 
 
+const deactiveTable = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update tables set active='0' where id='${info.id}' `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const deactiveTableAll = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update tables set active='0'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+
+
 const updatePosdetailGuest = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
@@ -792,6 +900,73 @@ const updatePosdetailGuest = function (info, callback) {
     });
     console.log(info);
     connection.query(`update posdetail set guestname='${info.guest}' where transno='${info.transno}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const updateTablestrno = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update posdetail set tables_id='${info.table}' where transno='${info.transno}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const updateTables_use = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update tables set transno='${info.transno}' where active='1' and tablecd='${info.tablecd}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const cleartable = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update tables set transno='' where active='1' and transno='${info.transno}'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1162,6 +1337,50 @@ const checkTransactionNo = function (info, callback) {
     });
 }
 
+const getTableList = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`select * from tables where active='1'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const getTablesNotUse = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`select * from tables where active='1' and transno=''`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
 
 const getUserinfofromManual = function (info, callback) {
     connection.query(`USE profiler;`, function (err, result, fields) {
@@ -1336,6 +1555,8 @@ const getTrnoData = function (info, callback) {
     ,(select pricelist from item_master where posdetail.itemcode=item_master.itemcode) as pricelist
     ,(select multiprice from item_master where posdetail.itemcode=item_master.itemcode) as multiprice
     ,posdetail.salestype as salestype
+    ,guestname
+    ,tables_id as tablesid
     FROM 
     posdetail WHERE transno='${info.data}' AND active= '1'
     
@@ -1370,6 +1591,8 @@ const getTrnoData = function (info, callback) {
     ,null as pricelist
     ,0 as multiprice
     ,'' as salestype
+    ,'' as guestname
+    ,'' as tablesid
     FROM poscondiment WHERE transno='${info.data}' AND active= '1'
     
     
@@ -1696,13 +1919,14 @@ const getOutstandingBill = function (info, callback) {
         }
     });
     console.log(info);
-    connection.query(`SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname  FROM (SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname FROM (
-        SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname FROM posdetail WHERE active='1' GROUP BY transno
-        UNION 
-        SELECT trdt,transno,SUM(totalnett) AS totalaftdisc,'' AS usercreate,createdt,'' AS guestname FROM  poscondiment WHERE active='1' GROUP BY transno)X 
-        GROUP BY transno
-            UNION 
-        SELECT trdt,transno,SUM(-totalamt) AS totalaftdisc,usercreate,createdate,'' as guestname FROM pospayment where active='1' GROUP BY transno )X GROUP BY transno HAVING totalaftdisc`, function (err, result, fields) {
+    connection.query(`SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname,tablesid  FROM (
+        SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname,tables_id AS tablesid FROM (
+                SELECT trdt,transno,SUM(totalaftdisc) AS totalaftdisc,usercreate,createdt,guestname,tables_id  FROM posdetail WHERE active='1' GROUP BY transno
+                UNION 
+                SELECT trdt,transno,SUM(totalnett) AS totalaftdisc,'' AS usercreate,createdt,'' AS guestname,'' AS tablesid FROM  poscondiment WHERE active='1' GROUP BY transno)X 
+                GROUP BY transno
+                UNION 
+                SELECT trdt,transno,SUM(-totalamt) AS totalaftdisc,usercreate,createdate,'' AS guestname,'' AS tablesid FROM pospayment WHERE active='1' GROUP BY transno )X GROUP BY transno HAVING totalaftdisc`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1855,4 +2079,4 @@ const delitem = function (info, callback) {
 
 
 
-module.exports = { getAccessUser,checkUserFromOauth, checkOutletUser, getUserinfofromManual, updateUserGmail, listdataChart, getSalesMonthly, getSales7daySum, getSalesTodaySum, deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };
+module.exports = { cleartable,getTablesNotUse, updateTables_use, updateTablestrno, deactiveTableAll, deactiveTable, getTableList, insertTableMaster, getAccessUser, checkUserFromOauth, checkOutletUser, getUserinfofromManual, updateUserGmail, listdataChart, getSalesMonthly, getSales7daySum, getSalesTodaySum, deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };
