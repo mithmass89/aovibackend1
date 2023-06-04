@@ -30,7 +30,7 @@ const createDB = function (info, callback) {
             throw err;
         }
     });
-    connection.query(`CREATE TABLES item_master (
+    connection.query(`CREATE TABLE item_master (
         outletcode varchar(100) NOT NULL,
         itemcode varchar(100) NOT NULL,
         subitemcode varchar(200) NOT NULL,
@@ -130,7 +130,8 @@ const createDB = function (info, callback) {
 
     connection.query(`CREATE TABLE outlet_settings (
         transcode varchar(15) NOT NULL DEFAULT '',
-        transnonext bigint NOT NULL DEFAULT '1'
+        transnonext bigint NOT NULL DEFAULT '1',
+        usetaxservice tinyint(1) NOT NULL DEFAULT '0'
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
       `, function (err, result, fields) {
         if (err) {
@@ -232,7 +233,7 @@ const createDB = function (info, callback) {
         usercode varchar(100) DEFAULT '',
         accesscode varchar(100) DEFAULT '',
         outlet varchar(100) DEFAULT ''
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_c
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
       `, function (err, result, fields) {
         if (err) {
             console.log(err);
@@ -248,7 +249,7 @@ const createDB = function (info, callback) {
         transno1 varchar(200) DEFAULT '',
         itemseq bigint DEFAULT '0',
         itemcode varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-        split varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '''A''',
+        split varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'A',
         itemdesc varchar(200) DEFAULT '',
         description varchar(200) DEFAULT '',
         qty decimal(10,0) NOT NULL DEFAULT '0',
@@ -296,7 +297,7 @@ const createDB = function (info, callback) {
         pscd varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
         transno varchar(200) NOT NULL DEFAULT '',
         transno1 varchar(200) NOT NULL DEFAULT '',
-        split varchar(200) DEFAULT 'A',
+        split int DEFAULT '1',
         docno varchar(200) DEFAULT '',
         trdesc varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
         guestname varchar(200) DEFAULT '',
@@ -334,7 +335,7 @@ const createDB = function (info, callback) {
 
     connection.query(`CREATE TABLE pymaster(
         paymentcd varchar(200) NOT NULL DEFAULT '',
-        paymendesc varchar(200) DEFAULT '',
+        paymentdesc varchar(200) DEFAULT '',
         typ varchar(200) DEFAULT '',
         coacomp varchar(200) DEFAULT '',
         clactive varchar(200) DEFAULT '',
@@ -349,6 +350,7 @@ const createDB = function (info, callback) {
         tbl varchar(200),
         section varchar(200),
         id bigint NOT NULL AUTO_INCREMENT,
+        term int NOT NULL DEFAULT '0',
         PRIMARY KEY (paymentcd,id),
         KEY id (id)
       )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`, function (err, result, fields) {
@@ -393,6 +395,26 @@ const categoryCreate = function (info, callback) {
         }
     });
     connection.query(`insert into category (ctgcd,ctgdesc) VALUES  ("${info.ctgcd}","${info.ctgdesc}");`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const createCompany = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`insert into pymaster (paymentcd,paymentdesc,typ,coacomp,clactive,coapayment,email,telp,npwp,pic,term,limits) VALUES  ("${info.data.paymentcd}","${info.data.paymentdesc}","${info.data.typ}","${info.data.coacomp}","${info.data.clactive}","${info.data.coapayment}","${info.data.email}","${info.data.telp}","${info.data.npwp}","${info.data.pic}","${info.data.term}","${info.data.limits}");`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -475,7 +497,7 @@ const insertTableMaster = function (info, callback) {
 
 const insertPoscondiment = function (info, callback) {
     console.log(info);
-    connection.query(`USE ${info.dbname};;`, function (err, result, fields) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -600,6 +622,30 @@ const insertPromo = function (info, callback) {
         console.log('Database : ' + connection.state);
     });
 }
+
+
+const insertRegisterUser = function (info, callback) {
+    console.log(info);
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`insert into users (usercd,password,email) VALUES  ("${info.usercd}","${info.password}","${info.email}");`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+
 
 
 
@@ -842,6 +888,51 @@ const updateUserGmail = function (info, callback) {
 }
 
 
+
+const updatePaymentFirst = function (info, callback) {
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update users set subscription = "${info.subsrcription}", pytransaction="${info.pytransaction}",paymentcheck="${info.paymentcheck}" where email='${info.email}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const updatePaymentVerification = function (info, callback) {
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update users set paymentcheck="${info.paymentcheck}" where email='${info.email}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
 const deactiveTable = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
@@ -1011,7 +1102,7 @@ const updatePosdetail = function (info, callback) {
     });
     console.log(info);
     connection.query(`UPDATE posdetail 
-    SET description='${info.data.description}',qty='${info.data.qty}',rateamtitem='${info.data.rateamtitem}',discamt='${info.data.discamt}',discpct='${info.data.discpct}',revenueamt='${info.data.revenueamt}',taxamt='${info.data.taxamt}',serviceamt='${info.data.serviceamt}',totalaftdisc='${info.data.totalaftdisc}',salestype='${info.data.salestype}' WHERE id = '${info.data.id}'`, function (err, result, fields) {
+    SET description='${info.data.description}',qty='${info.data.qty}',rateamtitem='${info.data.rateamtitem}',discamt='${info.data.discamt}',discpct='${info.data.discpct}',revenueamt='${info.data.revenueamt}',taxamt='${info.data.taxamt}',serviceamt='${info.data.serviceamt}',totalaftdisc='${info.data.totalaftdisc}',salestype='${info.data.salestype}',notes='${info.data.note}' WHERE id = '${info.data.id}'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1181,6 +1272,30 @@ const deactivePromoTrno = function (info, callback) {
     });
 }
 
+
+const updateSplit = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`UPDATE posdetail SET split=split+1 where transno='${info.transno}' and itemseq='${info.itemseq}' `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+
+}
+
 const deactiveCondiment = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
@@ -1289,6 +1404,59 @@ const getProduct = function (info, callback) {
     });
 }
 
+const getPaymentMaster = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT * 
+     FROM pymaster where  active='1'
+     
+ `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const getSummaryCashierDetail = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT * FROM pospayment WHERE trdt BETWEEN '${info.fromdate}' AND '${info.todate}' AND active='1' and pymtmthd<>'Discount'
+     
+ `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+
+
 /// query for check item has condiment ///
 const getItemCondiment = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
@@ -1337,6 +1505,32 @@ const checkTransactionNo = function (info, callback) {
     });
 }
 
+
+const checkVerifiedPayment = function (info, callback) {
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`select * from users where email='${info.email}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+
+
 const getTableList = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
         if (err) {
@@ -1347,6 +1541,29 @@ const getTableList = function (info, callback) {
     });
     console.log(info);
     connection.query(`select * from tables where active='1'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const checkLastSplit = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`select max(split) as split from posdetail where transno='${info.transno}' group by transno`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1557,8 +1774,9 @@ const getTrnoData = function (info, callback) {
     ,posdetail.salestype as salestype
     ,guestname
     ,tables_id as tablesid
+    ,split
     FROM 
-    posdetail WHERE transno='${info.data}' AND active= '1'
+    posdetail WHERE transno='${info.data}' AND active= '1' AND split='1'
     
     
     UNION 
@@ -1593,6 +1811,7 @@ const getTrnoData = function (info, callback) {
     ,'' as salestype
     ,'' as guestname
     ,'' as tablesid
+    ,0 as split
     FROM poscondiment WHERE transno='${info.data}' AND active= '1'
     
     
@@ -1641,7 +1860,7 @@ const getSumTrno = function (info, callback) {
       SUM(totalaftdisc) AS totalaftdisc
     FROM
       posdetail
-    WHERE transno = "${info.data}"
+    WHERE transno = "${info.data}" and split='1'
       AND active = '1'
     UNION
     SELECT
@@ -1653,7 +1872,7 @@ const getSumTrno = function (info, callback) {
       SUM(totalnett) AS totalaftdisc
     FROM
       poscondiment   WHERE transno = "${info.data}"
-      AND active = '1'
+      AND active = '1' 
     UNION
     SELECT
       transno,
@@ -1678,7 +1897,7 @@ const getSumTrno = function (info, callback) {
       pospayment
     WHERE transno = "${info.data}"
       AND active = '1'
-      AND pymtmthd = 'Discount') AS X`, function (err, result, fields) {
+      AND pymtmthd = 'Discount' AND split='1') AS X`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1701,18 +1920,153 @@ const getCashierSummary = function (info, callback) {
         }
     });
     console.log(info);
-    connection.query(`select * from pospayment where trdt='${info.trdt}' and pscd='${info.pscd}'`, function (err, result, fields) {
+    connection.query(`SELECT trdt,pscd,transno,transno1,SUM(totalamt) AS ftotamt,compdesc,pymtmthd FROM pospayment 
+    WHERE trdt BETWEEN '${info.fromdate}' AND '${info.todate}' AND active='1' 
+    AND pymtmthd<>'Discount' GROUP BY pymtmthd,compdesc`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
             throw err;
         }
-        //console.log(result);
+        console.log(result);
         callback(result);
 
         console.log('Database : ' + connection.state);
     });
 }
+
+
+const getAnalisaRingkasan = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`select trdt,outletcd,transno,itemcode,sum(revenueamt) as revenueamt from (
+        select trdt,outletcd,transno,itemcode,sum(revenueamt) as revenueamt from posdetail
+         where trdt between '${info.fromdate}' and '${info.todate}' and active='1'  group by trdt
+         union 
+         SELECT trdt,outletcode,transno,itemcode,SUM(totalamt) AS revenueamt FROM poscondiment where trdt between '${info.fromdate}' and '${info.todate}' and active='1' GROUP BY trdt)X
+         group by trdt order by trdt
+        `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const getReportDetailMenuSold = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT itemcode,itemdesc,SUM(qty) AS qty,SUM(revenueamt) AS revenueamt FROM posdetail WHERE trdt BETWEEN '${info.fromdate}' and '${info.todate}' GROUP BY itemcode ORDER BY qty DESC
+        `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const getReportDetailMenuSoldDetail = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT * FROM posdetail WHERE trdt BETWEEN '${info.fromdate}' and '${info.todate}'  AND itemcode='${info.itemcode}'
+        `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const getAnalisaRingkasanTopitem = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT trdt,outletcd,transno,itemcode,itemdesc,SUM(revenueamt) AS revenueamt,SUM(qty) AS qty FROM posdetail
+    WHERE trdt BETWEEN '${info.fromdate}' and '${info.todate}' AND active='1'  
+    GROUP BY itemcode 
+   ORDER BY qty DESC
+   LIMIT 1
+   
+        `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const getAnalisaRingkasanItemKuranglaku = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT trdt,outletcd,transno,itemcode,itemdesc,SUM(revenueamt) AS revenueamt,SUM(qty) AS qty FROM posdetail
+    WHERE trdt BETWEEN '${info.fromdate}' and '${info.todate}' AND active='1'  
+    GROUP BY itemcode 
+   ORDER BY qty asc
+   LIMIT 1
+   
+        `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
 
 const getCTG = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
@@ -1729,6 +2083,7 @@ const getCTG = function (info, callback) {
             callback(err);
             throw err;
         }
+
         //console.log(result);
         callback(result);
 
@@ -1767,7 +2122,7 @@ const getSummaryPyTrno = function (info, callback) {
         }
     });
     console.log(info);
-    connection.query(`select sum(totalamt) as totalamt from pospayment where transno1="${info.transno}" and pymtmthd<>"Discount" and active="1"`, function (err, result, fields) {
+    connection.query(`select sum(totalamt) as totalamt from pospayment where transno1="${info.transno}" and pymtmthd<>"Discount" and active="1" and split='1'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1949,7 +2304,7 @@ const getDetailPyTrno = function (info, callback) {
         }
     });
     console.log(info);
-    connection.query(`select * from pospayment where transno1='${info.transno1}' and active='1' and pymtmthd<>'Discount'`, function (err, result, fields) {
+    connection.query(`select * from pospayment where transno1='${info.transno1}' and active='1' and pymtmthd<>'Discount'and split='1'`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -2079,4 +2434,4 @@ const delitem = function (info, callback) {
 
 
 
-module.exports = { cleartable,getTablesNotUse, updateTables_use, updateTablestrno, deactiveTableAll, deactiveTable, getTableList, insertTableMaster, getAccessUser, checkUserFromOauth, checkOutletUser, getUserinfofromManual, updateUserGmail, listdataChart, getSalesMonthly, getSales7daySum, getSalesTodaySum, deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };
+module.exports = { getReportDetailMenuSoldDetail,getReportDetailMenuSold, getAnalisaRingkasanItemKuranglaku, getAnalisaRingkasanTopitem, getAnalisaRingkasan, getSummaryCashierDetail, createCompany, getPaymentMaster, checkLastSplit, updateSplit, updatePaymentVerification, checkVerifiedPayment, updatePaymentFirst, insertRegisterUser, cleartable, getTablesNotUse, updateTables_use, updateTablestrno, deactiveTableAll, deactiveTable, getTableList, insertTableMaster, getAccessUser, checkUserFromOauth, checkOutletUser, getUserinfofromManual, updateUserGmail, listdataChart, getSalesMonthly, getSales7daySum, getSalesTodaySum, deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };

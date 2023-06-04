@@ -9,6 +9,17 @@ app.use(bodyParser.json());
 // parse requests of content-type: application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+const fs = require("fs");
+var path = require('path');
+var dir = path.join(__dirname, '../uploadfiles/uploads/');
+app.use(express.static(dir));
+
+
+
+app.get('/getfile/:file', async (req, res) => {
+    console.log(req.params.file);
+    res.sendFile(`${dir}${req.params.file}`);
+});
 
 
 app.post('/query', function (req, res) {
@@ -51,6 +62,11 @@ app.post('/additem', function (req, res) {
         res.status(200).send(result);
     });
 });
+app.post('/insertRegisterUser', function (req, res) {
+    insertRegisterUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
 
 app.post('/category', function (req, res) {
     insertCategory(req.body, function (result, req) {
@@ -70,8 +86,14 @@ app.post('/getitemcode', function (req, res) {
     });
 });
 
-app.post('/getcashiersummary', function (req, res) {
+app.post('/getCashierSummary', function (req, res) {
     getCashierSummary(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getSummaryCashierDetail', function (req, res) {
+    getSummaryCashierDetail(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -101,6 +123,13 @@ app.post('/detailpayment', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+app.post('/checkLastSplit', function (req, res) {
+    checkLastSplit(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 app.post('/sumtrans', function (req, res) {
     getsumTrans(req.body, function (result, req) {
@@ -141,6 +170,12 @@ app.post('/insertMapping', function (req, res) {
     });
 });
 
+app.post('/createCompany', function (req, res) {
+    createCompany(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/insert_transactiontype', function (req, res) {
     insert_transaksitipe(req.body, function (result, req) {
         res.status(200).send(result);
@@ -157,11 +192,56 @@ app.post('/insertTableMaster', function (req, res) {
 
 
 
+app.post('/checkVerifiedPayment', function (req, res) {
+    checkVerifiedPayment(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/updatePaymentVerification', function (req, res) {
+    updatePaymentVerification(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/outlet_user', function (req, res) {
     getOutletUser(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
+
+
+app.post('/getReportDetailMenuSold', function (req, res) {
+    getReportDetailMenuSold(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getReportDetailMenuSoldDetail', function (req, res) {
+    getReportDetailMenuSoldDetail(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAnalisaRingkasan', function (req, res) {
+    getAnalisaRingkasan(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAnalisaRingkasanTopitem', function (req, res) {
+    getAnalisaRingkasanTopitem(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAnalisaRingkasanItemKuranglaku', function (req, res) {
+    getAnalisaRingkasanItemKuranglaku(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 
 
@@ -264,6 +344,12 @@ app.post('/promolist', function (req, res) {
     });
 });
 
+app.post('/getPaymentMaster', function (req, res) {
+    getPaymentMaster(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/getTableList', function (req, res) {
     getTableList(req.body, function (result, req) {
         res.status(200).send(result);
@@ -325,6 +411,12 @@ app.post('/updatePromo', function (req, res) {
 
 app.post('/updateTrno', function (req, res) {
     updateTrnos(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/updateSplit', function (req, res) {
+    updateSplit(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -432,6 +524,11 @@ app.post('/updateCondiment', function (req, res) {
     });
 });
 
+app.post('/updatePaymentFirst', function (req, res) {
+    updatePaymentFirst(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
 
 
 
@@ -440,10 +537,23 @@ app.post('/updateCondiment', function (req, res) {
 
 
 
+
+updatePaymentFirst = function (info, callback, requests) {
+    functionOutlet.updatePaymentFirst(info, callback);
+}
+
+updatePaymentVerification = function (info, callback, requests) {
+    functionOutlet.updatePaymentVerification(info, callback);
+}
 
 insertOutlet = function (info, callback, requests) {
     functionOutlet.outletcreate(info, callback);
 }
+
+insertRegisterUser = function (info, callback, requests) {
+    functionOutlet.insertRegisterUser(info, callback);
+}
+
 
 insertOutlet_User = function (info, callback, requests) {
     functionOutlet.outlet_user(info, callback);
@@ -477,6 +587,10 @@ insertCondiment_master = function (info, callback, requests) {
     functionOutlet.condimentMasterCreate(info, callback, requests);
 }
 
+createCompany = function (info, callback, requests) {
+    functionOutlet.createCompany(info, callback, requests);
+}
+
 insertPosCondiment = function (info, callback, requests) {
     functionOutlet.insertPoscondiment(info, callback, requests);
 }
@@ -496,6 +610,14 @@ insertTableMaster = function (info, callback, requests) {
 
 
 
+
+checkVerifiedPayment = function (info, callback, requests) {
+    functionOutlet.checkVerifiedPayment(info, callback, requests);
+}
+
+checkLastSplit = function (info, callback, requests) {
+    functionOutlet.checkLastSplit(info, callback, requests);
+}
 
 
 
@@ -597,12 +719,40 @@ getSalesMonthly = function (info, callback, requests) {
     functionOutlet.getSalesMonthly(info, callback, requests);
 }
 
+getPaymentMaster = function (info, callback, requests) {
+    functionOutlet.getPaymentMaster(info, callback, requests);
+}
+
 listdataChart = function (info, callback, requests) {
     functionOutlet.listdataChart(info, callback, requests);
 }
 
 getCashierSummary = function (info, callback, requests) {
     functionOutlet.getCashierSummary(info, callback, requests);
+}
+
+getAnalisaRingkasan = function (info, callback, requests) {
+    functionOutlet.getAnalisaRingkasan(info, callback, requests);
+}
+
+getAnalisaRingkasanTopitem = function (info, callback, requests) {
+    functionOutlet.getAnalisaRingkasanTopitem(info, callback, requests);
+}
+
+getAnalisaRingkasanItemKuranglaku = function (info, callback, requests) {
+    functionOutlet.getAnalisaRingkasanItemKuranglaku(info, callback, requests);
+}
+
+getReportDetailMenuSold = function (info, callback, requests) {
+    functionOutlet.getReportDetailMenuSold(info, callback, requests);
+}
+
+getReportDetailMenuSoldDetail = function (info, callback, requests) {
+    functionOutlet.getReportDetailMenuSoldDetail(info, callback, requests);
+}
+
+getSummaryCashierDetail = function (info, callback, requests) {
+    functionOutlet.getSummaryCashierDetail(info, callback, requests);
 }
 
 getTransno = function (info, callback, requests) {
@@ -637,6 +787,11 @@ updateCondimentTrno = function (info, callback, requests) {
 updateUserGmail = function (info, callback, requests) {
     functionOutlet.updateUserGmail(info, callback, requests);
 }
+
+updateSplit = function (info, callback, requests) {
+    functionOutlet.updateSplit(info, callback, requests);
+}
+
 
 
 delPromo = function (info, callback, requests) {
