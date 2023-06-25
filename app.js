@@ -12,6 +12,7 @@ app.use(cors());
 const fs = require("fs");
 var path = require('path');
 var dir = path.join(__dirname, '../uploadfiles/uploads/');
+var dirs = path.join(__dirname, '../uploadfiles/logo/');
 app.use(express.static(dir));
 
 
@@ -20,6 +21,12 @@ app.get('/getfile/:file', async (req, res) => {
     console.log(req.params.file);
     res.sendFile(`${dir}${req.params.file}`);
 });
+
+app.get('/getlogo/:file', async (req, res) => {
+    console.log(req.params.file);
+    res.sendFile(`${dirs}${req.params.file}`);
+});
+
 
 
 app.post('/query', function (req, res) {
@@ -30,10 +37,12 @@ app.post('/query', function (req, res) {
 
 app.post('/addoutlet', function (req, res) {
     createDB(req.body, function (result, req) {
+
     });
     insertOutlet(req.body, function (result, req) {
         res.status(200).send(result);
     });
+
 
 });
 
@@ -62,6 +71,19 @@ app.post('/additem', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+app.post('/createPackageMenu', function (req, res) {
+    createPackageMenu(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertRegisterUserNew', function (req, res) {
+    insertRegisterUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/insertRegisterUser', function (req, res) {
     insertRegisterUser(req.body, function (result, req) {
         res.status(200).send(result);
@@ -76,6 +98,46 @@ app.post('/category', function (req, res) {
 
 app.post('/getitem', function (req, res) {
     getItem(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/getRoleStaff', function (req, res) {
+    getRoleStaff(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getRoleAccessTemplate', function (req, res) {
+    getRoleAccessTemplate(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAccessUserOutlet', function (req, res) {
+    getAccessUserOutlet(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getListUser', function (req, res) {
+    getListUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+
+app.post('/getPackageMenu', function (req, res) {
+    getPackageMenu(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/getTemplatePrinter', function (req, res) {
+    getTemplatePrinter(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -162,6 +224,26 @@ app.post('/insertPosCondiment', function (req, res) {
     });
 });
 
+app.post('/insertAdujsmentStock', function (req, res) {
+    insertAdujsmentStock(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/insertAccessUser', function (req, res) {
+    insertAccessUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertAccessOutlet', function (req, res) {
+    insertAccessOutlet(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 
 
 app.post('/insertMapping', function (req, res) {
@@ -198,6 +280,12 @@ app.post('/checkVerifiedPayment', function (req, res) {
     });
 });
 
+app.post('/checkEmailExist', function (req, res) {
+    checkEmailExist(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 app.post('/updatePaymentVerification', function (req, res) {
     updatePaymentVerification(req.body, function (result, req) {
@@ -205,8 +293,20 @@ app.post('/updatePaymentVerification', function (req, res) {
     });
 });
 
+app.post('/updateTemplatePrinter', function (req, res) {
+    updateTemplatePrinter(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/outlet_user', function (req, res) {
     getOutletUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getOutletUserSelected', function (req, res) {
+    getOutletUserSelected(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -220,6 +320,18 @@ app.post('/getReportDetailMenuSold', function (req, res) {
 
 app.post('/getReportDetailMenuSoldDetail', function (req, res) {
     getReportDetailMenuSoldDetail(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAccessSettingsUser', function (req, res) {
+    getAccessSettingsUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAccessCodevoid', function (req, res) {
+    getAccessCodevoid(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -270,6 +382,13 @@ app.post('/outstandingBill', function (req, res) {
     });
 });
 
+app.post('/getOutstandingBillTransno', function (req, res) {
+    getOutstandingBillTransno(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 app.post('/condimentlist', function (req, res) {
     getCondimentLists(req.body, function (result, req) {
         res.status(200).send(result);
@@ -297,6 +416,30 @@ app.post('/gettransaksiTipe', function (req, res) {
 
 app.post('/salestoday', function (req, res) {
     getSalesTodaySum(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getPenjualanRataRata', function (req, res) {
+    getPenjualanRataRata(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getReportRingkasan', function (req, res) {
+    getReportRingkasan(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/DetailMenuItemTerjual', function (req, res) {
+    DetailMenuItemTerjual(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getTrnoBO', function (req, res) {
+    getTrnoBO(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -369,6 +512,12 @@ app.post('/deactiveTable', function (req, res) {
     });
 });
 
+app.post('/deActivePackageMenu', function (req, res) {
+    deActivePackageMenu(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/deactiveTableAll', function (req, res) {
     deactiveTableAll(req.body, function (result, req) {
         res.status(200).send(result);
@@ -415,12 +564,21 @@ app.post('/updateTrno', function (req, res) {
     });
 });
 
+app.post('/updateStrictUser', function (req, res) {
+    updateStrictUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
 app.post('/updateSplit', function (req, res) {
     updateSplit(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
-
+app.post('/updateSplitCondiment', function (req, res) {
+    updateSplitCondiment(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
 
 app.post('/updateTrnoGuest', function (req, res) {
     updateguestTrnos(req.body, function (result, req) {
@@ -524,6 +682,12 @@ app.post('/updateCondiment', function (req, res) {
     });
 });
 
+app.post('/passwordreset', function (req, res) {
+    passwordreset(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/updatePaymentFirst', function (req, res) {
     updatePaymentFirst(req.body, function (result, req) {
         res.status(200).send(result);
@@ -536,7 +700,9 @@ app.post('/updatePaymentFirst', function (req, res) {
 
 
 
-
+getAccessCodevoid = function (info, callback, requests) {
+    functionOutlet.getAccessCodevoid(info, callback);
+}
 
 updatePaymentFirst = function (info, callback, requests) {
     functionOutlet.updatePaymentFirst(info, callback);
@@ -554,6 +720,10 @@ insertRegisterUser = function (info, callback, requests) {
     functionOutlet.insertRegisterUser(info, callback);
 }
 
+insertRegisterUserNew = function (info, callback, requests) {
+    functionOutlet.insertRegisterUserNew(info, callback);
+}
+
 
 insertOutlet_User = function (info, callback, requests) {
     functionOutlet.outlet_user(info, callback);
@@ -567,6 +737,14 @@ insertTrtp = function (info, callback, requests,) {
 insertProduct = function (info, callback, requests) {
     functionOutlet.insertProduct(info, callback, requests);
 }
+
+
+createPackageMenu = function (info, callback, requests) {
+    functionOutlet.createPackageMenu(info, callback, requests);
+}
+
+
+
 insertCategory = function (info, callback, requests) {
     functionOutlet.categoryCreate(info, callback, requests);
 }
@@ -595,6 +773,18 @@ insertPosCondiment = function (info, callback, requests) {
     functionOutlet.insertPoscondiment(info, callback, requests);
 }
 
+insertAdujsmentStock = function (info, callback, requests) {
+    functionOutlet.insertAdujsmentStock(info, callback, requests);
+}
+
+insertAccessUser = function (info, callback, requests) {
+    functionOutlet.insertAccessUser(info, callback, requests);
+}
+
+insertAccessOutlet = function (info, callback, requests) {
+    functionOutlet.insertAccessOutlet(info, callback, requests);
+}
+
 insertMapping_condiment = function (info, callback, requests) {
     functionOutlet.mapping_Condiment(info, callback, requests);
 }
@@ -615,6 +805,10 @@ checkVerifiedPayment = function (info, callback, requests) {
     functionOutlet.checkVerifiedPayment(info, callback, requests);
 }
 
+checkEmailExist = function (info, callback, requests) {
+    functionOutlet.checkEmailExist(info, callback, requests);
+}
+
 checkLastSplit = function (info, callback, requests) {
     functionOutlet.checkLastSplit(info, callback, requests);
 }
@@ -623,6 +817,10 @@ checkLastSplit = function (info, callback, requests) {
 
 getOutletUser = function (info, callback, requests) {
     functionOutlet.getOutletUser(info, callback, requests);
+}
+
+getOutletUserSelected = function (info, callback, requests) {
+    functionOutlet.getOutletUserSelected(info, callback, requests);
 }
 
 
@@ -656,7 +854,9 @@ getUserinfofromManual = function (info, callback, requests) {
 
 
 
-
+getTemplatePrinter = function (info, callback, requests) {
+    functionOutlet.getTemplatePrinter(info, callback, requests);
+}
 getPromoList = function (info, callback, requests) {
     functionOutlet.getPromoList(info, callback, requests);
 }
@@ -664,6 +864,27 @@ getPromoList = function (info, callback, requests) {
 getItem = function (info, callback, requests) {
     functionOutlet.getProduct(info, callback, requests);
 }
+
+getRoleStaff = function (info, callback, requests) {
+    functionOutlet.getRoleStaff(info, callback, requests);
+}
+
+getRoleAccessTemplate = function (info, callback, requests) {
+    functionOutlet.getRoleAccessTemplate(info, callback, requests);
+}
+
+getAccessUserOutlet = function (info, callback, requests) {
+    functionOutlet.getAccessUserOutlet(info, callback, requests);
+}
+
+getListUser = function (info, callback, requests) {
+    functionOutlet.getListUser(info, callback, requests);
+}
+
+getPackageMenu = function (info, callback, requests) {
+    functionOutlet.getPackageMenu(info, callback, requests);
+}
+
 getItemByItemCode = function (info, callback, requests) {
     functionOutlet.getProductByItemcode(info, callback, requests);
 }
@@ -706,10 +927,30 @@ getDetailPyTrno = function (info, callback, requests) {
 getOutstandingBill = function (info, callback, requests) {
     functionOutlet.getOutstandingBill(info, callback, requests);
 }
+getOutstandingBillTransno = function (info, callback, requests) {
+    functionOutlet.getOutstandingBillTransno(info, callback, requests);
+}
 
 getSalesTodaySum = function (info, callback, requests) {
     functionOutlet.getSalesTodaySum(info, callback, requests);
 }
+
+getPenjualanRataRata = function (info, callback, requests) {
+    functionOutlet.getPenjualanRataRata(info, callback, requests);
+}
+
+getReportRingkasan = function (info, callback, requests) {
+    functionOutlet.getReportRingkasan(info, callback, requests);
+}
+
+DetailMenuItemTerjual = function (info, callback, requests) {
+    functionOutlet.DetailMenuItemTerjual(info, callback, requests);
+}
+
+getTrnoBO = function (info, callback, requests) {
+    functionOutlet.getTrnoBO(info, callback, requests);
+}
+
 
 getSales7daySum = function (info, callback, requests) {
     functionOutlet.getSales7daySum(info, callback, requests);
@@ -745,6 +986,10 @@ getAnalisaRingkasanItemKuranglaku = function (info, callback, requests) {
 
 getReportDetailMenuSold = function (info, callback, requests) {
     functionOutlet.getReportDetailMenuSold(info, callback, requests);
+}
+
+getAccessSettingsUser = function (info, callback, requests) {
+    functionOutlet.getAccessSettingsUser(info, callback, requests);
 }
 
 getReportDetailMenuSoldDetail = function (info, callback, requests) {
@@ -784,12 +1029,24 @@ updateCondimentTrno = function (info, callback, requests) {
     functionOutlet.updateCondimentTrno(info, callback, requests);
 }
 
+passwordreset = function (info, callback, requests) {
+    functionOutlet.passwordreset(info, callback, requests);
+}
+
 updateUserGmail = function (info, callback, requests) {
     functionOutlet.updateUserGmail(info, callback, requests);
 }
 
 updateSplit = function (info, callback, requests) {
     functionOutlet.updateSplit(info, callback, requests);
+}
+
+updateSplitCondiment = function (info, callback, requests) {
+    functionOutlet.updateSplitCondiment(info, callback, requests);
+}
+
+updateStrictUser = function (info, callback, requests) {
+    functionOutlet.updateStrictUser(info, callback, requests);
 }
 
 
@@ -801,6 +1058,10 @@ delPromo = function (info, callback, requests) {
 
 updateItem = function (info, callback, requests) {
     functionOutlet.updateItem(info, callback, requests);
+}
+
+updateTemplatePrinter = function (info, callback, requests) {
+    functionOutlet.updateTemplatePrinter(info, callback, requests);
 }
 
 updatePromo = function (info, callback, requests) {
@@ -834,6 +1095,10 @@ deactivePosdetail = function (info, callback, requests) {
 
 deactiveTable = function (info, callback, requests) {
     functionOutlet.deactiveTable(info, callback, requests);
+}
+
+deActivePackageMenu = function (info, callback, requests) {
+    functionOutlet.deActivePackageMenu(info, callback, requests);
 }
 
 deactiveTableAll = function (info, callback, requests) {
