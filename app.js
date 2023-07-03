@@ -9,6 +9,24 @@ app.use(bodyParser.json());
 // parse requests of content-type: application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+const fs = require("fs");
+var path = require('path');
+var dir = path.join(__dirname, '../uploadfiles/uploads/');
+var dirs = path.join(__dirname, '../uploadfiles/logo/');
+app.use(express.static(dir));
+
+
+
+app.get('/getfile/:file', async (req, res) => {
+    console.log(req.params.file);
+    res.sendFile(`${dir}${req.params.file}`);
+});
+
+app.get('/getlogo/:file', async (req, res) => {
+    console.log(req.params.file);
+    res.sendFile(`${dirs}${req.params.file}`);
+});
+
 
 
 app.post('/query', function (req, res) {
@@ -19,10 +37,12 @@ app.post('/query', function (req, res) {
 
 app.post('/addoutlet', function (req, res) {
     createDB(req.body, function (result, req) {
+
     });
     insertOutlet(req.body, function (result, req) {
         res.status(200).send(result);
     });
+
 
 });
 
@@ -52,6 +72,24 @@ app.post('/additem', function (req, res) {
     });
 });
 
+app.post('/createPackageMenu', function (req, res) {
+    createPackageMenu(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertRegisterUserNew', function (req, res) {
+    insertRegisterUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertRegisterUser', function (req, res) {
+    insertRegisterUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/category', function (req, res) {
     insertCategory(req.body, function (result, req) {
         res.status(200).send(result);
@@ -64,14 +102,113 @@ app.post('/getitem', function (req, res) {
     });
 });
 
+
+app.post('/getRoleStaff', function (req, res) {
+    getRoleStaff(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getRoleAccessTemplate', function (req, res) {
+    getRoleAccessTemplate(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAccessUserOutlet', function (req, res) {
+    getAccessUserOutlet(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getCustomers', function (req, res) {
+    getCustomers(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+app.post('/checkPhoneNumber', function (req, res) {
+    checkPhoneNumber(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/checkTypeLoyality', function (req, res) {
+    checkTypeLoyality(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getRewardData', function (req, res) {
+    getRewardData(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getLoyalityProgramActive', function (req, res) {
+    getLoyalityProgramActive(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/checkProgramExist', function (req, res) {
+    checkProgramExist(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertRegisterCustomer', function (req, res) {
+    insertRegisterCustomer(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertLoyalityProgram', function (req, res) {
+    insertLoyalityProgram(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertRewardSetting', function (req, res) {
+    insertRewardSetting(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getListUser', function (req, res) {
+    getListUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+
+app.post('/getPackageMenu', function (req, res) {
+    getPackageMenu(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/getTemplatePrinter', function (req, res) {
+    getTemplatePrinter(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/getitemcode', function (req, res) {
     getItemByItemCode(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
 
-app.post('/getcashiersummary', function (req, res) {
+app.post('/getCashierSummary', function (req, res) {
     getCashierSummary(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getSummaryCashierDetail', function (req, res) {
+    getSummaryCashierDetail(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -101,6 +238,13 @@ app.post('/detailpayment', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+app.post('/checkLastSplit', function (req, res) {
+    checkLastSplit(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 app.post('/sumtrans', function (req, res) {
     getsumTrans(req.body, function (result, req) {
@@ -133,10 +277,43 @@ app.post('/insertPosCondiment', function (req, res) {
     });
 });
 
+app.post('/insertAdujsmentStock', function (req, res) {
+    insertAdujsmentStock(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/insertAccessOutletUser', function (req, res) {
+    insertAccessOutletUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertAccessUser', function (req, res) {
+    insertAccessUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/insertAccessOutlet', function (req, res) {
+    insertAccessOutlet(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 
 
 app.post('/insertMapping', function (req, res) {
     insertMapping_condiment(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/createCompany', function (req, res) {
+    createCompany(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -147,14 +324,110 @@ app.post('/insert_transactiontype', function (req, res) {
     });
 });
 
+app.post('/insertTableMaster', function (req, res) {
+    insertTableMaster(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
 
 
+
+
+
+app.post('/checkVerifiedPayment', function (req, res) {
+    checkVerifiedPayment(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/checkEmailExist', function (req, res) {
+    checkEmailExist(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/updatePaymentVerification', function (req, res) {
+    updatePaymentVerification(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/updateCustomers', function (req, res) {
+    updateCustomers(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/updatePointCustomers', function (req, res) {
+    updatePointCustomers(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/updateTemplatePrinter', function (req, res) {
+    updateTemplatePrinter(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
 
 app.post('/outlet_user', function (req, res) {
     getOutletUser(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
+
+app.post('/getOutletUserSelected', function (req, res) {
+    getOutletUserSelected(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/getReportDetailMenuSold', function (req, res) {
+    getReportDetailMenuSold(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getReportDetailMenuSoldDetail', function (req, res) {
+    getReportDetailMenuSoldDetail(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAccessSettingsUser', function (req, res) {
+    getAccessSettingsUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAccessCodevoid', function (req, res) {
+    getAccessCodevoid(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAnalisaRingkasan', function (req, res) {
+    getAnalisaRingkasan(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAnalisaRingkasanTopitem', function (req, res) {
+    getAnalisaRingkasanTopitem(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getAnalisaRingkasanItemKuranglaku', function (req, res) {
+    getAnalisaRingkasanItemKuranglaku(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+
 
 app.post('/getUserinfofromManual', function (req, res) {
     getUserinfofromManual(req.body, function (result, req) {
@@ -180,6 +453,13 @@ app.post('/outstandingBill', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+app.post('/getOutstandingBillTransno', function (req, res) {
+    getOutstandingBillTransno(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 app.post('/condimentlist', function (req, res) {
     getCondimentLists(req.body, function (result, req) {
@@ -208,6 +488,30 @@ app.post('/gettransaksiTipe', function (req, res) {
 
 app.post('/salestoday', function (req, res) {
     getSalesTodaySum(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getPenjualanRataRata', function (req, res) {
+    getPenjualanRataRata(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getReportRingkasan', function (req, res) {
+    getReportRingkasan(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/DetailMenuItemTerjual', function (req, res) {
+    DetailMenuItemTerjual(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getTrnoBO', function (req, res) {
+    getTrnoBO(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -255,8 +559,39 @@ app.post('/promolist', function (req, res) {
     });
 });
 
+app.post('/getPaymentMaster', function (req, res) {
+    getPaymentMaster(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getTableList', function (req, res) {
+    getTableList(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/delctg', function (req, res) {
     delctg(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/deactiveTable', function (req, res) {
+    deactiveTable(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/deActivePackageMenu', function (req, res) {
+    deActivePackageMenu(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/deactiveTableAll', function (req, res) {
+    deactiveTableAll(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -301,9 +636,50 @@ app.post('/updateTrno', function (req, res) {
     });
 });
 
+app.post('/updateStrictUser', function (req, res) {
+    updateStrictUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+app.post('/updateSplit', function (req, res) {
+    updateSplit(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+app.post('/updateSplitCondiment', function (req, res) {
+    updateSplitCondiment(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
 
 app.post('/updateTrnoGuest', function (req, res) {
     updateguestTrnos(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/updateTablestrno', function (req, res) {
+    updateTablestrno(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/updateTables_use', function (req, res) {
+    updateTables_use(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/cleartable', function (req, res) {
+    cleartable(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getTablesNotUse', function (req, res) {
+    getTablesNotUse(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -378,6 +754,17 @@ app.post('/updateCondiment', function (req, res) {
     });
 });
 
+app.post('/passwordreset', function (req, res) {
+    passwordreset(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/updatePaymentFirst', function (req, res) {
+    updatePaymentFirst(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
 
 
 
@@ -385,11 +772,39 @@ app.post('/updateCondiment', function (req, res) {
 
 
 
+getAccessCodevoid = function (info, callback, requests) {
+    functionOutlet.getAccessCodevoid(info, callback);
+}
 
+updatePaymentFirst = function (info, callback, requests) {
+    functionOutlet.updatePaymentFirst(info, callback);
+}
+
+updatePaymentVerification = function (info, callback, requests) {
+    functionOutlet.updatePaymentVerification(info, callback);
+}
+
+updateCustomers = function (info, callback, requests) {
+    functionOutlet.updateCustomers(info, callback);
+}
+
+
+updatePointCustomers = function (info, callback, requests) {
+    functionOutlet.updatePointCustomers(info, callback);
+}
 
 insertOutlet = function (info, callback, requests) {
     functionOutlet.outletcreate(info, callback);
 }
+
+insertRegisterUser = function (info, callback, requests) {
+    functionOutlet.insertRegisterUser(info, callback);
+}
+
+insertRegisterUserNew = function (info, callback, requests) {
+    functionOutlet.insertRegisterUserNew(info, callback);
+}
+
 
 insertOutlet_User = function (info, callback, requests) {
     functionOutlet.outlet_user(info, callback);
@@ -403,6 +818,14 @@ insertTrtp = function (info, callback, requests,) {
 insertProduct = function (info, callback, requests) {
     functionOutlet.insertProduct(info, callback, requests);
 }
+
+
+createPackageMenu = function (info, callback, requests) {
+    functionOutlet.createPackageMenu(info, callback, requests);
+}
+
+
+
 insertCategory = function (info, callback, requests) {
     functionOutlet.categoryCreate(info, callback, requests);
 }
@@ -423,8 +846,40 @@ insertCondiment_master = function (info, callback, requests) {
     functionOutlet.condimentMasterCreate(info, callback, requests);
 }
 
+createCompany = function (info, callback, requests) {
+    functionOutlet.createCompany(info, callback, requests);
+}
+
 insertPosCondiment = function (info, callback, requests) {
     functionOutlet.insertPoscondiment(info, callback, requests);
+}
+
+insertAdujsmentStock = function (info, callback, requests) {
+    functionOutlet.insertAdujsmentStock(info, callback, requests);
+}
+
+insertAccessUser = function (info, callback, requests) {
+    functionOutlet.insertAccessUser(info, callback, requests);
+}
+insertAccessOutletUser = function (info, callback, requests) {
+    functionOutlet.insertAccessOutletUser(info, callback, requests);
+}
+
+insertRegisterCustomer = function (info, callback, requests) {
+    functionOutlet.insertRegisterCustomer(info, callback, requests);
+}
+
+insertLoyalityProgram = function (info, callback, requests) {
+    functionOutlet.insertLoyalityProgram(info, callback, requests);
+}
+
+insertRewardSetting = function (info, callback, requests) {
+    functionOutlet.insertRewardSetting(info, callback, requests);
+}
+
+
+insertAccessOutlet = function (info, callback, requests) {
+    functionOutlet.insertAccessOutlet(info, callback, requests);
 }
 
 insertMapping_condiment = function (info, callback, requests) {
@@ -436,12 +891,46 @@ insert_transaksitipe = function (info, callback, requests) {
 }
 
 
+insertTableMaster = function (info, callback, requests) {
+    functionOutlet.insertTableMaster(info, callback, requests);
+}
 
+
+
+
+checkVerifiedPayment = function (info, callback, requests) {
+    functionOutlet.checkVerifiedPayment(info, callback, requests);
+}
+
+checkEmailExist = function (info, callback, requests) {
+    functionOutlet.checkEmailExist(info, callback, requests);
+}
+
+checkLastSplit = function (info, callback, requests) {
+    functionOutlet.checkLastSplit(info, callback, requests);
+}
 
 
 
 getOutletUser = function (info, callback, requests) {
     functionOutlet.getOutletUser(info, callback, requests);
+}
+
+getOutletUserSelected = function (info, callback, requests) {
+    functionOutlet.getOutletUserSelected(info, callback, requests);
+}
+
+
+getTablesNotUse = function (info, callback, requests) {
+    functionOutlet.getTablesNotUse(info, callback, requests);
+}
+
+getTableList = function (info, callback, requests) {
+    functionOutlet.getTableList(info, callback, requests);
+}
+
+cleartable = function (info, callback, requests) {
+    functionOutlet.cleartable(info, callback, requests);
 }
 
 checkUserFromOauth = function (info, callback, requests) {
@@ -462,7 +951,9 @@ getUserinfofromManual = function (info, callback, requests) {
 
 
 
-
+getTemplatePrinter = function (info, callback, requests) {
+    functionOutlet.getTemplatePrinter(info, callback, requests);
+}
 getPromoList = function (info, callback, requests) {
     functionOutlet.getPromoList(info, callback, requests);
 }
@@ -470,6 +961,52 @@ getPromoList = function (info, callback, requests) {
 getItem = function (info, callback, requests) {
     functionOutlet.getProduct(info, callback, requests);
 }
+
+getRoleStaff = function (info, callback, requests) {
+    functionOutlet.getRoleStaff(info, callback, requests);
+}
+
+getRoleAccessTemplate = function (info, callback, requests) {
+    functionOutlet.getRoleAccessTemplate(info, callback, requests);
+}
+
+getAccessUserOutlet = function (info, callback, requests) {
+    functionOutlet.getAccessUserOutlet(info, callback, requests);
+}
+
+getCustomers = function (info, callback, requests) {
+    functionOutlet.getCustomers(info, callback, requests);
+}
+
+checkPhoneNumber = function (info, callback, requests) {
+    functionOutlet.checkPhoneNumber(info, callback, requests);
+}
+
+checkTypeLoyality = function (info, callback, requests) {
+    functionOutlet.checkTypeLoyality(info, callback, requests);
+}
+
+
+getRewardData = function (info, callback, requests) {
+    functionOutlet.getRewardData(info, callback, requests);
+}
+
+getLoyalityProgramActive = function (info, callback, requests) {
+    functionOutlet.getLoyalityProgramActive(info, callback, requests);
+}
+
+checkProgramExist = function (info, callback, requests) {
+    functionOutlet.checkProgramExist(info, callback, requests);
+}
+
+getListUser = function (info, callback, requests) {
+    functionOutlet.getListUser(info, callback, requests);
+}
+
+getPackageMenu = function (info, callback, requests) {
+    functionOutlet.getPackageMenu(info, callback, requests);
+}
+
 getItemByItemCode = function (info, callback, requests) {
     functionOutlet.getProductByItemcode(info, callback, requests);
 }
@@ -512,10 +1049,30 @@ getDetailPyTrno = function (info, callback, requests) {
 getOutstandingBill = function (info, callback, requests) {
     functionOutlet.getOutstandingBill(info, callback, requests);
 }
+getOutstandingBillTransno = function (info, callback, requests) {
+    functionOutlet.getOutstandingBillTransno(info, callback, requests);
+}
 
 getSalesTodaySum = function (info, callback, requests) {
     functionOutlet.getSalesTodaySum(info, callback, requests);
 }
+
+getPenjualanRataRata = function (info, callback, requests) {
+    functionOutlet.getPenjualanRataRata(info, callback, requests);
+}
+
+getReportRingkasan = function (info, callback, requests) {
+    functionOutlet.getReportRingkasan(info, callback, requests);
+}
+
+DetailMenuItemTerjual = function (info, callback, requests) {
+    functionOutlet.DetailMenuItemTerjual(info, callback, requests);
+}
+
+getTrnoBO = function (info, callback, requests) {
+    functionOutlet.getTrnoBO(info, callback, requests);
+}
+
 
 getSales7daySum = function (info, callback, requests) {
     functionOutlet.getSales7daySum(info, callback, requests);
@@ -525,12 +1082,44 @@ getSalesMonthly = function (info, callback, requests) {
     functionOutlet.getSalesMonthly(info, callback, requests);
 }
 
+getPaymentMaster = function (info, callback, requests) {
+    functionOutlet.getPaymentMaster(info, callback, requests);
+}
+
 listdataChart = function (info, callback, requests) {
     functionOutlet.listdataChart(info, callback, requests);
 }
 
 getCashierSummary = function (info, callback, requests) {
     functionOutlet.getCashierSummary(info, callback, requests);
+}
+
+getAnalisaRingkasan = function (info, callback, requests) {
+    functionOutlet.getAnalisaRingkasan(info, callback, requests);
+}
+
+getAnalisaRingkasanTopitem = function (info, callback, requests) {
+    functionOutlet.getAnalisaRingkasanTopitem(info, callback, requests);
+}
+
+getAnalisaRingkasanItemKuranglaku = function (info, callback, requests) {
+    functionOutlet.getAnalisaRingkasanItemKuranglaku(info, callback, requests);
+}
+
+getReportDetailMenuSold = function (info, callback, requests) {
+    functionOutlet.getReportDetailMenuSold(info, callback, requests);
+}
+
+getAccessSettingsUser = function (info, callback, requests) {
+    functionOutlet.getAccessSettingsUser(info, callback, requests);
+}
+
+getReportDetailMenuSoldDetail = function (info, callback, requests) {
+    functionOutlet.getReportDetailMenuSoldDetail(info, callback, requests);
+}
+
+getSummaryCashierDetail = function (info, callback, requests) {
+    functionOutlet.getSummaryCashierDetail(info, callback, requests);
 }
 
 getTransno = function (info, callback, requests) {
@@ -562,9 +1151,26 @@ updateCondimentTrno = function (info, callback, requests) {
     functionOutlet.updateCondimentTrno(info, callback, requests);
 }
 
+passwordreset = function (info, callback, requests) {
+    functionOutlet.passwordreset(info, callback, requests);
+}
+
 updateUserGmail = function (info, callback, requests) {
     functionOutlet.updateUserGmail(info, callback, requests);
 }
+
+updateSplit = function (info, callback, requests) {
+    functionOutlet.updateSplit(info, callback, requests);
+}
+
+updateSplitCondiment = function (info, callback, requests) {
+    functionOutlet.updateSplitCondiment(info, callback, requests);
+}
+
+updateStrictUser = function (info, callback, requests) {
+    functionOutlet.updateStrictUser(info, callback, requests);
+}
+
 
 
 delPromo = function (info, callback, requests) {
@@ -574,6 +1180,10 @@ delPromo = function (info, callback, requests) {
 
 updateItem = function (info, callback, requests) {
     functionOutlet.updateItem(info, callback, requests);
+}
+
+updateTemplatePrinter = function (info, callback, requests) {
+    functionOutlet.updateTemplatePrinter(info, callback, requests);
 }
 
 updatePromo = function (info, callback, requests) {
@@ -588,6 +1198,14 @@ updateguestTrnos = function (info, callback, requests) {
     functionOutlet.updatePosdetailGuest(info, callback, requests);
 }
 
+updateTablestrno = function (info, callback, requests) {
+    functionOutlet.updateTablestrno(info, callback, requests);
+}
+
+updateTables_use = function (info, callback, requests) {
+    functionOutlet.updateTables_use(info, callback, requests);
+}
+
 
 updatePosdetail = function (info, callback, requests) {
     functionOutlet.updatePosdetail(info, callback, requests);
@@ -595,6 +1213,18 @@ updatePosdetail = function (info, callback, requests) {
 
 deactivePosdetail = function (info, callback, requests) {
     functionOutlet.deactivePosdetail(info, callback, requests);
+}
+
+deactiveTable = function (info, callback, requests) {
+    functionOutlet.deactiveTable(info, callback, requests);
+}
+
+deActivePackageMenu = function (info, callback, requests) {
+    functionOutlet.deActivePackageMenu(info, callback, requests);
+}
+
+deactiveTableAll = function (info, callback, requests) {
+    functionOutlet.deactiveTableAll(info, callback, requests);
 }
 
 
