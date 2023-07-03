@@ -121,6 +121,59 @@ app.post('/getAccessUserOutlet', function (req, res) {
     });
 });
 
+app.post('/getCustomers', function (req, res) {
+    getCustomers(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+app.post('/checkPhoneNumber', function (req, res) {
+    checkPhoneNumber(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/checkTypeLoyality', function (req, res) {
+    checkTypeLoyality(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getRewardData', function (req, res) {
+    getRewardData(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getLoyalityProgramActive', function (req, res) {
+    getLoyalityProgramActive(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/checkProgramExist', function (req, res) {
+    checkProgramExist(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertRegisterCustomer', function (req, res) {
+    insertRegisterCustomer(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertLoyalityProgram', function (req, res) {
+    insertLoyalityProgram(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertRewardSetting', function (req, res) {
+    insertRewardSetting(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/getListUser', function (req, res) {
     getListUser(req.body, function (result, req) {
         res.status(200).send(result);
@@ -231,11 +284,18 @@ app.post('/insertAdujsmentStock', function (req, res) {
 });
 
 
+app.post('/insertAccessOutletUser', function (req, res) {
+    insertAccessOutletUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/insertAccessUser', function (req, res) {
     insertAccessUser(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
+
 
 app.post('/insertAccessOutlet', function (req, res) {
     insertAccessOutlet(req.body, function (result, req) {
@@ -289,6 +349,18 @@ app.post('/checkEmailExist', function (req, res) {
 
 app.post('/updatePaymentVerification', function (req, res) {
     updatePaymentVerification(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/updateCustomers', function (req, res) {
+    updateCustomers(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/updatePointCustomers', function (req, res) {
+    updatePointCustomers(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -712,6 +784,15 @@ updatePaymentVerification = function (info, callback, requests) {
     functionOutlet.updatePaymentVerification(info, callback);
 }
 
+updateCustomers = function (info, callback, requests) {
+    functionOutlet.updateCustomers(info, callback);
+}
+
+
+updatePointCustomers = function (info, callback, requests) {
+    functionOutlet.updatePointCustomers(info, callback);
+}
+
 insertOutlet = function (info, callback, requests) {
     functionOutlet.outletcreate(info, callback);
 }
@@ -780,6 +861,22 @@ insertAdujsmentStock = function (info, callback, requests) {
 insertAccessUser = function (info, callback, requests) {
     functionOutlet.insertAccessUser(info, callback, requests);
 }
+insertAccessOutletUser = function (info, callback, requests) {
+    functionOutlet.insertAccessOutletUser(info, callback, requests);
+}
+
+insertRegisterCustomer = function (info, callback, requests) {
+    functionOutlet.insertRegisterCustomer(info, callback, requests);
+}
+
+insertLoyalityProgram = function (info, callback, requests) {
+    functionOutlet.insertLoyalityProgram(info, callback, requests);
+}
+
+insertRewardSetting = function (info, callback, requests) {
+    functionOutlet.insertRewardSetting(info, callback, requests);
+}
+
 
 insertAccessOutlet = function (info, callback, requests) {
     functionOutlet.insertAccessOutlet(info, callback, requests);
@@ -875,6 +972,31 @@ getRoleAccessTemplate = function (info, callback, requests) {
 
 getAccessUserOutlet = function (info, callback, requests) {
     functionOutlet.getAccessUserOutlet(info, callback, requests);
+}
+
+getCustomers = function (info, callback, requests) {
+    functionOutlet.getCustomers(info, callback, requests);
+}
+
+checkPhoneNumber = function (info, callback, requests) {
+    functionOutlet.checkPhoneNumber(info, callback, requests);
+}
+
+checkTypeLoyality = function (info, callback, requests) {
+    functionOutlet.checkTypeLoyality(info, callback, requests);
+}
+
+
+getRewardData = function (info, callback, requests) {
+    functionOutlet.getRewardData(info, callback, requests);
+}
+
+getLoyalityProgramActive = function (info, callback, requests) {
+    functionOutlet.getLoyalityProgramActive(info, callback, requests);
+}
+
+checkProgramExist = function (info, callback, requests) {
+    functionOutlet.checkProgramExist(info, callback, requests);
 }
 
 getListUser = function (info, callback, requests) {

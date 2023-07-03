@@ -16,6 +16,7 @@ connection.connect((error) => {
 });
 
 
+
 const createDB = function (info, callback) {
     console.log(info);
     connection.query(`CREATE DATABASE ${info.dbname};`, function (err, result, fields) {
@@ -67,6 +68,44 @@ const createDB = function (info, callback) {
             throw err;
         }
 
+    });
+
+
+    connection.query(`CREATE TABLE transaction_typ (
+        transtype varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+        transdesc varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT '',
+        active int DEFAULT '1',
+        id bigint NOT NULL AUTO_INCREMENT,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+      `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+
+
+    connection.query(`
+    CREATE TABLE reward_point (
+        loyalitycd varchar(200) DEFAULT NULL,
+        rewaradtype varchar(200) DEFAULT NULL,
+        redempoint decimal(10,0) DEFAULT NULL,
+        reward decimal(10,0) DEFAULT NULL,
+        note varchar(200) DEFAULT NULL,
+        useminimum int DEFAULT NULL,
+        minimumamount decimal(10,0) DEFAULT NULL,
+        id int NOT NULL AUTO_INCREMENT,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+      
+      `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
     });
 
     connection.query(`CREATE TABLE transaction_typ_bo (
@@ -461,6 +500,86 @@ const createDB = function (info, callback) {
             throw err;
         }
     });
+
+
+    connection.query(`CREATE TABLE customers (
+        customercd varchar(200) DEFAULT '',
+        fullname varchar(200) DEFAULT '',
+        title varchar(200) DEFAULT '',
+        phone varchar(200) DEFAULT '',
+        email varchar(200) DEFAULT '',
+        workkom varchar(200) DEFAULT '',
+        address varchar(200) DEFAULT '',
+        points decimal(10,0) DEFAULT '0',
+        memberfrom date DEFAULT NULL,
+        id int NOT NULL AUTO_INCREMENT,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+
+
+    connection.query(`CREATE TABLE loyality_dt (
+        loyalitycd varchar(200) DEFAULT NULL,
+        loyaltiydesc varchar(200) DEFAULT NULL,
+        fromdate varchar(200) DEFAULT NULL,
+        todate varchar(200) DEFAULT NULL,
+        type varchar(200) DEFAULT NULL,
+        convamount decimal(10,0) DEFAULT NULL,
+        point decimal(10,0) DEFAULT NULL,
+        minimumamount decimal(10,0) DEFAULT NULL,
+        useminimum int DEFAULT NULL,
+        joinreward decimal(10,0) DEFAULT NULL,
+        id int NOT NULL AUTO_INCREMENT,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+      
+      `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+
+    connection.query(`CREATE TABLE loyality_type (
+        typecd varchar(200) DEFAULT NULL,
+        typedesc varchar(200) DEFAULT NULL,
+        note varchar(200) DEFAULT NULL,
+        id int NOT NULL AUTO_INCREMENT,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+
+
+    connection.query(`insert into loyality_type (typecd,typedesc,note) VALUES  ('type-01','Rp X = Y Point','Pelanggan dapat akan mendapat point untuk setiap pembelian dengan amount tertentu ')`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        console.log('Database : ' + connection.state);
+    });
+    connection.query(`insert into loyality_type (typecd,typedesc,note) VALUES  ('type-02','Item / Category X = Y Point','Pelanggan dapat akan mendapat point untuk setiap pembelian berdasarkan item atau kategory')`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        console.log('Database : ' + connection.state);
+    });
+
 
     connection.query(`insert into outlet_settings (transnonext,usetaxservice,strictuser) VALUES  (1,0,0)`, function (err, result, fields) {
         if (err) {
@@ -920,6 +1039,68 @@ const insertRegisterUserNew = function (info, callback) {
 }
 
 
+const insertRegisterCustomer = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`insert into customers (customercd,fullname,title,phone,email,workkom,address,points,memberfrom) VALUES  ("${info.customercd}","${info.fullname}","${info.title}","${info.phone}","${info.email}","${info.workkom}","${info.address}","${info.points}","${info.memberfrom}");`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const insertLoyalityProgram = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`insert into loyality_dt (loyalitycd,loyaltiydesc,fromdate,todate,type,convamount,point,minimumamount,useminimum,joinreward) VALUES  ("${info.loyalitycd}","${info.loyaltiydesc}","${info.fromdate}","${info.todate}","${info.type}","${info.convamount}","${info.point}","${info.minimumamount}","${info.useminimum}","${info.joinreward}");`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const insertRewardSetting = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`insert into reward_point (loyalitycd,rewaradtype,redempoint,reward,note,useminimum,minimumamount) VALUES  ("${info.loyalitycd}","${info.rewaradtype}","${info.redempoint}","${info.reward}","${info.note}","${info.useminimum}","${info.minimumamount}");`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
 
 
 
@@ -934,6 +1115,115 @@ const getOutletUser = function (info, callback) {
         }
     });
     connection.query(`select * from outlet_access left join outlet on outlet.outletcd=outlet_access.outletcode where usercode='${info.usercd}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const checkPhoneNumber = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`select phone from customers where phone='${info.phone}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const checkTypeLoyality = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`select * from loyality_type`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const checkProgramExist = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`select * from loyality_dt`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const getRewardData = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`select * from reward_point`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+        console.log('Database : ' + connection.state);
+    });
+}
+
+
+const getLoyalityProgramActive = function (info, callback) {
+    console.log(info);
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    connection.query(`select * from loyality_dt`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1209,6 +1499,30 @@ const updatePromo = function (info, callback) {
         console.log('Database : ' + connection.state);
     });
 }
+
+
+const updatePointCustomers = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update customers set points = "${info.points}" where fullname="${info.fullname}`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        //console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
 
 
 
@@ -1830,7 +2144,7 @@ const getProduct = function (info, callback) {
     ,slsfl
     ,costcoa
     ,ctg
-    ,stock-IFNULL((SELECT SUM(qty) AS qty FROM posdetail WHERE item_master.itemcode=posdetail.itemcode),0)+(SELECT (CASE WHEN type_tr='1010' THEN SUM(qty) WHEN type_tr='1020' THEN SUM(-qty) ELSE 0 END) AS qty FROM transaction_bo WHERE transaction_bo.product=item_master.itemcode GROUP BY product) AS stock
+    ,stock-IFNULL((SELECT SUM(qty) AS qty FROM posdetail WHERE item_master.itemcode=posdetail.itemcode and posdetail.active='1'),0)+IFNULL((SELECT (CASE WHEN type_tr='1010' THEN SUM(qty) WHEN type_tr='1020' THEN SUM(-qty) ELSE 0 END) AS qty FROM transaction_bo WHERE transaction_bo.product=item_master.itemcode GROUP BY product),0) AS stock
     ,pathimage
     ,description
     ,trackstock
@@ -1846,7 +2160,7 @@ const getProduct = function (info, callback) {
     LEFT JOIN condiment_map 
     ON item_master.itemcode=condiment_map.itemcode 
     and condiment_map.active='1' 
-    where outletcode='${info.data}' and slsfl='1' GROUP BY itemcode`, function (err, result, fields) {
+    where outletcode='${info.data}' and slsfl='1'  GROUP BY itemcode`, function (err, result, fields) {
         if (err) {
             console.log(err);
             callback(err);
@@ -1929,6 +2243,34 @@ const getRoleAccessTemplate = function (info, callback) {
     });
 }
 
+const insertAccessOutletUser = function (info, callback) {
+    connection.query(`USE profiler;`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`INSERT INTO access_user(usercode,rolecode,roledesc,accesscode,accessdesc,outletcd,subscription)
+    SELECT usercd AS usercode,jobcd AS rolecode,jobdesc AS roledesc,accesscode,accessdesc,outlet_access.outletcode,subscription  FROM users 
+    LEFT JOIN access_template ON users.level=access_template.jobdesc
+    LEFT JOIN outlet_access ON outlet_access.usercode=users.usercd
+    WHERE usercd='${info.usercode}'
+    
+    `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
 
 const getAccessUserOutlet = function (info, callback) {
     connection.query(`USE profiler;`, function (err, result, fields) {
@@ -1963,6 +2305,30 @@ const getPaymentMaster = function (info, callback) {
     console.log(info);
     connection.query(`SELECT * 
      FROM pymaster where  active='1'
+     
+ `, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
+const getCustomers = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`SELECT * FROM customers 
      
  `, function (err, result, fields) {
         if (err) {
@@ -2914,6 +3280,28 @@ const updateStrictUser = function (info, callback) {
     });
 }
 
+const updateCustomers = function (info, callback) {
+    connection.query(`USE ${info.dbname};`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+    });
+    console.log(info);
+    connection.query(`update customers set fullname='${info.fullname}',title='${info.tittle}',phone='${info.phone}',email='${info.email}',address='${info.address}' where customercd='${info.customercd}'`, function (err, result, fields) {
+        if (err) {
+            console.log(err);
+            callback(err);
+            throw err;
+        }
+        // console.log(result);
+        callback(result);
+
+        console.log('Database : ' + connection.state);
+    });
+}
+
 
 const getSummaryPyTrno = function (info, callback) {
     connection.query(`USE ${info.dbname};`, function (err, result, fields) {
@@ -3324,4 +3712,4 @@ const delitem = function (info, callback) {
 
 
 
-module.exports = { getAccessUserOutlet,insertAccessUser,getRoleAccessTemplate, getTrnoBO, insertAdujsmentStock, updateSplitCondiment, getOutletUserSelected, DetailMenuItemTerjual, getReportRingkasan, passwordreset, getPenjualanRataRata, getListUser, insertRegisterUserNew, insertAccessOutlet, getRoleStaff, deActivePackageMenu, getPackageMenu, createPackageMenu, checkEmailExist, getTemplatePrinter, updateTemplatePrinter, updateStrictUser, getOutstandingBillTransno, getAccessCodevoid, getAccessSettingsUser, getReportDetailMenuSoldDetail, getReportDetailMenuSold, getAnalisaRingkasanItemKuranglaku, getAnalisaRingkasanTopitem, getAnalisaRingkasan, getSummaryCashierDetail, createCompany, getPaymentMaster, checkLastSplit, updateSplit, updatePaymentVerification, checkVerifiedPayment, updatePaymentFirst, insertRegisterUser, cleartable, getTablesNotUse, updateTables_use, updateTablestrno, deactiveTableAll, deactiveTable, getTableList, insertTableMaster, getAccessUser, checkUserFromOauth, checkOutletUser, getUserinfofromManual, updateUserGmail, listdataChart, getSalesMonthly, getSales7daySum, getSalesTodaySum, deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };
+module.exports = { updatePointCustomers, getLoyalityProgramActive, getRewardData, checkProgramExist, insertRewardSetting, insertLoyalityProgram, checkTypeLoyality, updateCustomers, checkPhoneNumber, insertRegisterCustomer, getCustomers, insertAccessOutletUser, getAccessUserOutlet, insertAccessUser, getRoleAccessTemplate, getTrnoBO, insertAdujsmentStock, updateSplitCondiment, getOutletUserSelected, DetailMenuItemTerjual, getReportRingkasan, passwordreset, getPenjualanRataRata, getListUser, insertRegisterUserNew, insertAccessOutlet, getRoleStaff, deActivePackageMenu, getPackageMenu, createPackageMenu, checkEmailExist, getTemplatePrinter, updateTemplatePrinter, updateStrictUser, getOutstandingBillTransno, getAccessCodevoid, getAccessSettingsUser, getReportDetailMenuSoldDetail, getReportDetailMenuSold, getAnalisaRingkasanItemKuranglaku, getAnalisaRingkasanTopitem, getAnalisaRingkasan, getSummaryCashierDetail, createCompany, getPaymentMaster, checkLastSplit, updateSplit, updatePaymentVerification, checkVerifiedPayment, updatePaymentFirst, insertRegisterUser, cleartable, getTablesNotUse, updateTables_use, updateTablestrno, deactiveTableAll, deactiveTable, getTableList, insertTableMaster, getAccessUser, checkUserFromOauth, checkOutletUser, getUserinfofromManual, updateUserGmail, listdataChart, getSalesMonthly, getSales7daySum, getSalesTodaySum, deactiveTipeTrans, getTransaksitipe, insert_transaksitipe, deactiveCondiment, updateCondimentTrno, getDetailCondimentTrno, deactiveCondimentByAll, deactivePosCondimentByID, insertPoscondiment, getItemCondiment, condimentMasterCreate, mapping_Condiment, outletcreate, updatePosdetailGuest, checkTransactionNo, getCashierSummary, getProductByItemcode, getItemByBarcode, getSummaryPyTrno, getOutstandingBill, getDetailPyTrno, getTrnoData, getPromoList, getSumTrno, insertPromo, insertDetail, insertPayment, getCTG, updateItem, deactivePospaymentTrans, deactivePosdetail, deactivePromoTrno, deactivePosdetailTrans, delPromo, updateTrno, updatePosdetail, updatePromo, delCTG, delitem, trantpInsert, insertProduct, outlet_user, getCondimentList, getOutletUser, createDB, categoryCreate, getProduct, connection };
