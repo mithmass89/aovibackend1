@@ -5,12 +5,13 @@ const bodyParser = require("body-parser");
 const { response } = require('express');
 const app = express();
 // parse requests of content-type: application/json
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 // parse requests of content-type: application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 const fs = require("fs");
 var path = require('path');
+const MySQLEvents = require('@rodrigogs/mysql-events');
 var dir = path.join(__dirname, '../uploadfiles/uploads/');
 var dirs = path.join(__dirname, '../uploadfiles/logo/');
 app.use(express.static(dir));
@@ -42,8 +43,16 @@ app.post('/addoutlet', function (req, res) {
     insertOutlet(req.body, function (result, req) {
         res.status(200).send(result);
     });
+});
 
 
+app.post('/insertItemFromHO', function (req, res) {
+    insertItemFromHO(req.body, function (result, req) {
+
+    });
+    insertItemFromHO(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
 });
 
 app.post('/insertdetail', function (req, res) {
@@ -65,6 +74,20 @@ app.post('/addoutletuser', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+app.post('/getCategory', function (req, res) {
+    getCategory(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/getProductByCtg', function (req, res) {
+    getProductByCtg(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 app.post('/additem', function (req, res) {
     insertProduct(req.body, function (result, req) {
@@ -101,6 +124,47 @@ app.post('/getitem', function (req, res) {
         res.status(200).send(result);
     });
 });
+
+app.post('/updateOnlineItem', function (req, res) {
+    updateOnlineItem(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+
+app.post('/checkStock', function (req, res) {
+    checkStock(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/getAccessStaffOutlet', function (req, res) {
+    getAccessStaffOutlet(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getStaff', function (req, res) {
+    getStaff(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getRefundTransaksi', function (req, res) {
+    getRefundTransaksi(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/refundTrans', function (req, res) {
+    refundTrans(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 
 
 app.post('/getRoleStaff', function (req, res) {
@@ -213,6 +277,12 @@ app.post('/getSummaryCashierDetail', function (req, res) {
     });
 });
 
+app.post('/insertGuestPosdetail', function (req, res) {
+    insertGuestPosdetail(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/checktransno', function (req, res) {
     getTransno(req.body, function (result, req) {
         res.status(200).send(result);
@@ -229,6 +299,31 @@ app.post('/getitembybarcode', function (req, res) {
 
 app.post('/detailtrno', function (req, res) {
     getTrnoData(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/deleteAksesStaff', function (req, res) {
+    deleteAksesStaff(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/getMainAccess', function (req, res) {
+    getMainAccess(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertAccessToUser', function (req, res) {
+    insertAccessToUser(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/grossMargin', function (req, res) {
+    grossMargin(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -340,6 +435,12 @@ app.post('/checkVerifiedPayment', function (req, res) {
     });
 });
 
+app.post('/checkExpiredDate', function (req, res) {
+    checkExpiredDate(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 app.post('/checkEmailExist', function (req, res) {
     checkEmailExist(req.body, function (result, req) {
         res.status(200).send(result);
@@ -383,12 +484,40 @@ app.post('/getOutletUserSelected', function (req, res) {
     });
 });
 
+app.post('/getListStaffOutlet', function (req, res) {
+    getListStaffOutlet(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/insertAbsensi', function (req, res) {
+    insertAbsensi(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/insertAccessCodeStrict', function (req, res) {
+    insertAccessCodeStrict(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+
 
 app.post('/getReportDetailMenuSold', function (req, res) {
     getReportDetailMenuSold(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
+
+
+app.post('/retriveListDetailPayment', function (req, res) {
+    retriveListDetailPayment(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 app.post('/getReportDetailMenuSoldDetail', function (req, res) {
     getReportDetailMenuSoldDetail(req.body, function (result, req) {
@@ -551,6 +680,12 @@ app.post('/checkUserFromOauth', function (req, res) {
     });
 });
 
+app.post('/checkPointCustomer', function (req, res) {
+    checkPointCustomer(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 
 app.post('/promolist', function (req, res) {
@@ -654,6 +789,12 @@ app.post('/updateSplitCondiment', function (req, res) {
 
 app.post('/updateTrnoGuest', function (req, res) {
     updateguestTrnos(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
+app.post('/updatePosdetailSeflorder', function (req, res) {
+    updatePosdetailSeflorder(req.body, function (result, req) {
         res.status(200).send(result);
     });
 });
@@ -766,6 +907,12 @@ app.post('/updatePaymentFirst', function (req, res) {
     });
 });
 
+app.post('/Update7DayActive', function (req, res) {
+    Update7DayActive(req.body, function (result, req) {
+        res.status(200).send(result);
+    });
+});
+
 
 
 
@@ -778,6 +925,10 @@ getAccessCodevoid = function (info, callback, requests) {
 
 updatePaymentFirst = function (info, callback, requests) {
     functionOutlet.updatePaymentFirst(info, callback);
+}
+
+Update7DayActive = function (info, callback, requests) {
+    functionOutlet.Update7DayActive(info, callback);
 }
 
 updatePaymentVerification = function (info, callback, requests) {
@@ -797,6 +948,10 @@ insertOutlet = function (info, callback, requests) {
     functionOutlet.outletcreate(info, callback);
 }
 
+insertItemFromHO = function (info, callback, requests) {
+    functionOutlet.insertItemFromHO(info, callback);
+}
+
 insertRegisterUser = function (info, callback, requests) {
     functionOutlet.insertRegisterUser(info, callback);
 }
@@ -810,6 +965,14 @@ insertOutlet_User = function (info, callback, requests) {
     functionOutlet.outlet_user(info, callback);
 
 }
+getCategory = function (info, callback, requests) {
+    functionOutlet.getCategory(info, callback);
+}
+
+getProductByCtg = function (info, callback, requests) {
+    functionOutlet.getProductByCtg(info, callback);
+}
+
 
 insertTrtp = function (info, callback, requests,) {
     functionOutlet.trantpInsert(info, callback, requests);
@@ -902,6 +1065,11 @@ checkVerifiedPayment = function (info, callback, requests) {
     functionOutlet.checkVerifiedPayment(info, callback, requests);
 }
 
+checkExpiredDate = function (info, callback, requests) {
+    functionOutlet.checkExpiredDate(info, callback, requests);
+}
+
+
 checkEmailExist = function (info, callback, requests) {
     functionOutlet.checkEmailExist(info, callback, requests);
 }
@@ -920,6 +1088,19 @@ getOutletUserSelected = function (info, callback, requests) {
     functionOutlet.getOutletUserSelected(info, callback, requests);
 }
 
+getListStaffOutlet = function (info, callback, requests) {
+    functionOutlet.getListStaffOutlet(info, callback, requests);
+}
+
+insertAbsensi = function (info, callback, requests) {
+    functionOutlet.insertAbsensi(info, callback, requests);
+}
+
+
+insertAccessCodeStrict = function (info, callback, requests) {
+    functionOutlet.insertAccessCodeStrict(info, callback, requests);
+}
+
 
 getTablesNotUse = function (info, callback, requests) {
     functionOutlet.getTablesNotUse(info, callback, requests);
@@ -935,6 +1116,10 @@ cleartable = function (info, callback, requests) {
 
 checkUserFromOauth = function (info, callback, requests) {
     functionOutlet.checkUserFromOauth(info, callback, requests);
+}
+
+checkPointCustomer = function (info, callback, requests) {
+    functionOutlet.checkPointCustomer(info, callback, requests);
 }
 
 checkOutletUser = function (info, callback, requests) {
@@ -960,6 +1145,32 @@ getPromoList = function (info, callback, requests) {
 
 getItem = function (info, callback, requests) {
     functionOutlet.getProduct(info, callback, requests);
+}
+
+updateOnlineItem = function (info, callback, requests) {
+    functionOutlet.updateOnlineItem(info, callback, requests);
+}
+
+
+
+checkStock = function (info, callback, requests) {
+    functionOutlet.checkStock(info, callback, requests);
+}
+
+getAccessStaffOutlet = function (info, callback, requests) {
+    functionOutlet.getAccessStaffOutlet(info, callback, requests);
+}
+
+getStaff = function (info, callback, requests) {
+    functionOutlet.getStaff(info, callback, requests);
+}
+
+getRefundTransaksi = function (info, callback, requests) {
+    functionOutlet.getRefundTransaksi(info, callback, requests);
+}
+
+refundTrans = function (info, callback, requests) {
+    functionOutlet.refundTrans(info, callback, requests);
 }
 
 getRoleStaff = function (info, callback, requests) {
@@ -1029,6 +1240,25 @@ getCondimentLists = function (info, callback, requests) {
 
 getTrnoData = function (info, callback, requests) {
     functionOutlet.getTrnoData(info, callback, requests);
+}
+
+
+deleteAksesStaff = function (info, callback, requests) {
+    functionOutlet.deleteAksesStaff(info, callback, requests);
+}
+
+getMainAccess = function (info, callback, requests) {
+    functionOutlet.getMainAccess(info, callback, requests);
+}
+
+
+insertAccessToUser = function (info, callback, requests) {
+    functionOutlet.insertAccessToUser(info, callback, requests);
+}
+
+
+grossMargin = function (info, callback, requests) {
+    functionOutlet.grossMargin(info, callback, requests);
 }
 
 getDetailConidmentTrno = function (info, callback, requests) {
@@ -1110,6 +1340,10 @@ getReportDetailMenuSold = function (info, callback, requests) {
     functionOutlet.getReportDetailMenuSold(info, callback, requests);
 }
 
+retriveListDetailPayment = function (info, callback, requests) {
+    functionOutlet.retriveListDetailPayment(info, callback, requests);
+}
+
 getAccessSettingsUser = function (info, callback, requests) {
     functionOutlet.getAccessSettingsUser(info, callback, requests);
 }
@@ -1120,6 +1354,10 @@ getReportDetailMenuSoldDetail = function (info, callback, requests) {
 
 getSummaryCashierDetail = function (info, callback, requests) {
     functionOutlet.getSummaryCashierDetail(info, callback, requests);
+}
+
+insertGuestPosdetail = function (info, callback, requests) {
+    functionOutlet.insertGuestPosdetail(info, callback, requests);
 }
 
 getTransno = function (info, callback, requests) {
@@ -1196,6 +1434,10 @@ updateTrnos = function (info, callback, requests) {
 
 updateguestTrnos = function (info, callback, requests) {
     functionOutlet.updatePosdetailGuest(info, callback, requests);
+}
+
+updatePosdetailSeflorder = function (info, callback, requests) {
+    functionOutlet.updatePosdetailSeflorder(info, callback, requests);
 }
 
 updateTablestrno = function (info, callback, requests) {
